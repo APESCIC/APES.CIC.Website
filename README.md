@@ -1,8 +1,8 @@
 ## Current release
 
-- Version: `v4.0.0b`
-- Release date: `2026-06-11`
-- Release impact: restored the website to a PHP-first shared runtime, removed checked-in static route snapshots and static-only page-owned bundles, and realigned preview, validation, and release records around the shared PHP source of truth.
+- Version: `v4.0.1b`
+- Release date: `2026-08-19`
+- Release impact: updated public contact details to 40 Morris Street, St Helens, Merseyside, WA9 3EN and 01744 374 015, and stopped exposing `info@apes.org.uk` through JSON-LD while keeping a nofollow mailto for visitors.
 - Operational note: preview the site with `scripts/preview-php-source-site.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and package only the `public/` bundle for Cloudron upload.
 
 <p align="center">
@@ -522,10 +522,10 @@ The website should be judged by practical public outcomes.
 
 **Association of Protecting Exotic Species CIC (APES CIC)**  
 CIC No: `16253848`  
-Registered Office: `40 Morris Street, St Helens, WA9 3EN`  
+Registered Office: `40 Morris Street, St Helens, Merseyside, WA9 3EN`  
 Website: <https://www.apes.org.uk/>  
 Contact Centre: <https://contact.apes.org.uk/>  
-Telephone: `0300 302 0998`
+Telephone: `01744 374 015`
 
 ---
 

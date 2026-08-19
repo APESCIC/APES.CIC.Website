@@ -2,8 +2,8 @@
   <div class="topbar">
     <div class="topbar-inner">
       <div class="topbar-contact" aria-label="APES contact details">
-        <p><a href="mailto:<?= htmlspecialchars(APES_CONTACT_EMAIL, ENT_QUOTES) ?>"><?= htmlspecialchars(APES_CONTACT_EMAIL, ENT_QUOTES) ?></a></p>
-        <p><a href="tel:03003020998"><?= htmlspecialchars($site['contact_phone_display'], ENT_QUOTES) ?></a></p>
+        <p><?= apes_render_contact_email_link() ?></p>
+        <p><?= apes_render_contact_phone_link() ?></p>
       </div>
       <?php $headerSocialLinks = apes_social_links_for_placement($site['social_profiles'] ?? [], 'header'); ?>
       <?php if (!empty($headerSocialLinks)): ?>

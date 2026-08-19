@@ -44,7 +44,7 @@
         <p>Part of <?= htmlspecialchars(APES_SITE_NAME, ENT_QUOTES) ?>.</p>
         <p>&copy; <?= htmlspecialchars((string) $site['year'], ENT_QUOTES) ?> <?= htmlspecialchars(APES_SITE_NAME, ENT_QUOTES) ?> &middot; CIC No: <?= htmlspecialchars(APES_CIC_NUMBER, ENT_QUOTES) ?></p>
         <p>Registered office: <?= htmlspecialchars($site['registered_address'], ENT_QUOTES) ?></p>
-        <p>Public contact: <a class="footer-inline-link" href="mailto:<?= htmlspecialchars($site['contact_email'], ENT_QUOTES) ?>"><?= htmlspecialchars($site['contact_email'], ENT_QUOTES) ?></a> &middot; <a class="footer-inline-link" href="tel:03003020998"><?= htmlspecialchars($site['contact_phone_display'], ENT_QUOTES) ?></a></p>
+        <p>Public contact: <?= apes_render_contact_email_link('footer-inline-link') ?> &middot; <?= apes_render_contact_phone_link('footer-inline-link') ?></p>
       </div>
       <p class="footer-bar__links">
         <?php foreach ($site['footer_required_links'] as $index => $link): ?>

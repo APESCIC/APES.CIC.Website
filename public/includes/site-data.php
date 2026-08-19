@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
-const APES_FALLBACK_VERSION = 'v2.9.7';
+const APES_FALLBACK_VERSION = 'v4.0.1b';
 const APES_SITE_NAME = 'Association of Protecting Exotic Species CIC';
 const APES_CIC_NUMBER = '16253848';
 const APES_CONTACT_EMAIL = 'info@apes.org.uk';
-const APES_CONTACT_PHONE = '0300 302 0998';
+const APES_CONTACT_PHONE = '01744 374 015';
+const APES_CONTACT_PHONE_TEL = '01744374015';
+const APES_POSTAL_ADDRESS_DISPLAY = '40 Morris Street, St Helens, Merseyside, WA9 3EN';
 const APES_PRIMARY_DOMAIN = 'https://www.apes.org.uk';
 const APES_NEWSROOM_URL = 'https://www.apesnews.org.uk/';
 
@@ -119,6 +121,23 @@ function apes_page_is_indexable(array $page): bool
     return !str_contains($robots, 'noindex') && $httpStatus < 400;
 }
 
+function apes_render_contact_email_link(string $class = ''): string
+{
+    $email = htmlspecialchars(APES_CONTACT_EMAIL, ENT_QUOTES);
+    $classAttr = $class === '' ? '' : ' class="' . htmlspecialchars($class, ENT_QUOTES) . '"';
+
+    return '<a' . $classAttr . ' href="mailto:' . $email . '" rel="nofollow">' . $email . '</a>';
+}
+
+function apes_render_contact_phone_link(string $class = ''): string
+{
+    $display = htmlspecialchars(APES_CONTACT_PHONE, ENT_QUOTES);
+    $tel = htmlspecialchars(APES_CONTACT_PHONE_TEL, ENT_QUOTES);
+    $classAttr = $class === '' ? '' : ' class="' . htmlspecialchars($class, ENT_QUOTES) . '"';
+
+    return '<a' . $classAttr . ' href="tel:' . $tel . '">' . $display . '</a>';
+}
+
 function apes_version(): string
 {
     static $version;
@@ -163,14 +182,17 @@ function apes_site_data(): array
         'cic_number' => APES_CIC_NUMBER,
         'contact_email' => APES_CONTACT_EMAIL,
         'contact_phone' => APES_CONTACT_PHONE,
-        'contact_phone_display' => '0300 302 0998',
+        'contact_phone_display' => APES_CONTACT_PHONE,
+        'contact_phone_tel' => APES_CONTACT_PHONE_TEL,
         'postal_address' => [
             '40 Morris Street',
             'St Helens',
+            'Merseyside',
             'WA9 3EN',
             'United Kingdom',
         ],
-        'registered_address' => 'Cross House, Unit 7, Sutton Road, St Helens, WA9 3YH',
+        'postal_address_display' => APES_POSTAL_ADDRESS_DISPLAY,
+        'registered_address' => APES_POSTAL_ADDRESS_DISPLAY,
         'year' => $year,
         'canonical_domain' => APES_PRIMARY_DOMAIN,
         'development_notice' => [
@@ -2192,9 +2214,9 @@ HTML,
   <article class="policy-block">
     <h2>15. Contact information</h2>
     <ul class="clean-list">
-      <li>Address: Cross House, Unit 7, Sutton Road, St Helens, WA9 3YH</li>
+      <li>Address: 40 Morris Street, St Helens, Merseyside, WA9 3EN</li>
       <li>Email: legal@apes.org.uk</li>
-      <li>Phone: 0300 302 0998</li>
+      <li>Phone: 01744 374 015</li>
     </ul>
   </article>
 </section>
@@ -2350,9 +2372,9 @@ HTML,
   <article class="policy-block">
     <h2>12. Contact information</h2>
     <ul class="clean-list">
-      <li>Address: Cross House, Unit 7, Sutton Road, St Helens, WA9 3YH</li>
+      <li>Address: 40 Morris Street, St Helens, Merseyside, WA9 3EN</li>
       <li>Email: legal@apes.org.uk</li>
-      <li>Phone: 0300 302 0998</li>
+      <li>Phone: 01744 374 015</li>
     </ul>
   </article>
 </section>
@@ -2543,9 +2565,9 @@ HTML,
   <div class="note-panel">
     <h2>Direct details</h2>
     <ul class="clean-list">
-      <li>Email: info@apes.org.uk</li>
-      <li>Phone: 0300 302 0998</li>
-      <li>Address: 40 Morris Street, St Helens, WA9 3EN</li>
+      <li>Email: <a href="mailto:info@apes.org.uk" rel="nofollow">info@apes.org.uk</a></li>
+      <li>Phone: 01744 374 015</li>
+      <li>Address: 40 Morris Street, St Helens, Merseyside, WA9 3EN</li>
     </ul>
   </div>
 </section>
@@ -2609,7 +2631,7 @@ HTML,
   <div class="card-grid card-grid-three">
     <article class="info-card">
       <h3>Main APES CIC line</h3>
-      <p>0300 302 0998</p>
+      <p>01744 374 015</p>
     </article>
     <article class="info-card">
       <h3>Shelter &amp; Rescue line</h3>
@@ -2704,9 +2726,9 @@ HTML,
                 'hero_summary' => 'Track every major release for this website, including updates, fixes, compliance changes, and user-facing improvements.',
                 'hero_actions' => [
                     ['label' => 'Expand all releases', 'href' => '#release-list', 'variant' => 'primary'],
-                    ['label' => 'View current release', 'href' => '#release-v296', 'variant' => 'secondary'],
+                    ['label' => 'View current release', 'href' => '#release-v401b', 'variant' => 'secondary'],
                 ],
-                'pills' => ['Current version ' . $siteVersion, 'Patch stable', 'Volunteer intro copy removal'],
+                'pills' => ['Current version ' . $siteVersion, 'Patch beta', 'Public contact details'],
                 'body_html' => <<<'HTML'
 <section class="section-shell">
   <div class="release-tools">
@@ -2734,7 +2756,54 @@ HTML,
 </section>
 
 <section class="section-shell" id="release-list">
-  <details class="release-card" data-release-card data-tags="current stable changed fixed public-facing" open id="release-v297">
+  <details class="release-card" data-release-card data-tags="current beta changed fixed public-facing" open id="release-v401b">
+    <summary>
+      <span class="release-version">v4.0.1b</span>
+      <span class="release-date">2026-08-19</span>
+    </summary>
+    <div class="release-body">
+      <div class="pill-row">
+        <span class="pill pill-version">Version v4.0.1b</span>
+        <span class="pill pill-status">Beta</span>
+        <span class="pill pill-type">Changed</span>
+        <span class="pill pill-fix">Fix</span>
+      </div>
+      <h3>Summary</h3>
+      <p>Updated public contact details to the Morris Street address and 01744 374 015, and reduced crawler use of the public email by removing it from JSON-LD and marking mailto links as nofollow.</p>
+      <h3>Detailed changes</h3>
+      <ul class="clean-list">
+        <li>Replaced the public CIC telephone number <code>0300 302 0998</code> with <code>01744 374 015</code> in shared PHP contact helpers, contact copy, leftover public HTML snapshots, and README organisation details.</li>
+        <li>Updated the public postal address and registered office to <code>40 Morris Street, St Helens, Merseyside, WA9 3EN</code>.</li>
+        <li>Kept <code>info@apes.org.uk</code> visible and clickable for visitors, added <code>rel="nofollow"</code> to those mailto links, and removed the Organisation schema email field so crawlers are not given a structured harvest target.</li>
+        <li>Left <code>legal@apes.org.uk</code>, Shelter and Clinic 0300 lines, and the veterinary emergency number unchanged.</li>
+        <li>Synchronised version files, README, root changelog, public changelog mirror and Change Log Hub release metadata.</li>
+      </ul>
+      <h3>Affected areas</h3>
+      <ul class="clean-list">
+        <li>Website: www.apes.org.uk</li>
+        <li>Page or route: all public routes via shared header, sidebar and footer; <code>/contact/</code>, <code>/contact-centre/</code>, <code>/policies/privacy/</code>, <code>/policies/terms-of-service/</code>, Change Log Hub and leftover public HTML snapshots</li>
+        <li>Files changed: shared PHP contact constants and render helpers, contact and policy copy, public HTML snapshots, VERSION files, README, root CHANGELOG, public CHANGELOG and Change Log Hub source</li>
+        <li>User groups affected: public visitors, supporters, staff and partners using published contact details</li>
+        <li>Public impact: visitors now see the current Morris Street address and 01744 number; the public email remains usable but is not advertised in structured data</li>
+        <li>Internal impact: contact details now come from shared PHP helpers, with leftover HTML snapshots aligned so Apache DirectoryIndex cannot serve the old 0300 number</li>
+      </ul>
+      <h3>Version decision</h3>
+      <ul class="clean-list">
+        <li>Previous version: v4.0.0b</li>
+        <li>New version: v4.0.1b</li>
+        <li>Version type: patch beta</li>
+        <li>Reason for version bump: user-visible contact-detail correction without route, architecture or hosting changes.</li>
+      </ul>
+      <h3>Validation</h3>
+      <ul class="clean-list">
+        <li>Checks run: PHP lint on changed includes, local HTTP preview of home, contact, privacy, terms and footer, JSON-LD email absence check, mailto nofollow check, and public-site validation where PHP is available</li>
+        <li>Manual checks completed: contact copy review, Shelter/Clinic 0300 retention review, footer-required link review and Cloudron LAMP compatibility review</li>
+        <li>Known limitations: leftover HTML snapshots remain in <code>public/</code> because Apache DirectoryIndex prefers <code>index.html</code>; they were updated in place rather than deleted</li>
+        <li>Rollback notes: restore the previous contact constants, schema email field, HTML snapshots and version records if the previous 0300 number or Cross House registered office must return.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="release-card" data-release-card data-tags="stable changed fixed public-facing" id="release-v297">
     <summary>
       <span class="release-version">v2.9.7</span>
       <span class="release-date">2026-06-10</span>

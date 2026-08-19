@@ -161,9 +161,9 @@ if (!function_exists('apes_current_page')) {
 <div class="mini-panel">
   <p class="eyebrow">Contact APES</p>
   <ul class="clean-list">
-    <li><a href="mailto:<?= htmlspecialchars(APES_CONTACT_EMAIL, ENT_QUOTES) ?>"><?= htmlspecialchars(APES_CONTACT_EMAIL, ENT_QUOTES) ?></a></li>
-    <li><a href="tel:03003020998"><?= htmlspecialchars($site['contact_phone_display'], ENT_QUOTES) ?></a></li>
-    <li>40 Morris Street, St Helens, WA9 3EN</li>
+    <li><?= apes_render_contact_email_link() ?></li>
+    <li><?= apes_render_contact_phone_link() ?></li>
+    <li><?= htmlspecialchars((string) ($site['postal_address_display'] ?? APES_POSTAL_ADDRESS_DISPLAY), ENT_QUOTES) ?></li>
   </ul>
 </div>
 <div class="mini-panel">
@@ -487,7 +487,6 @@ SVG,
             'name' => $site['site_name'],
             'url' => APES_PRIMARY_DOMAIN . '/',
             'logo' => apes_absolute_url((string) $site['brand']['logo_feature_png']),
-            'email' => 'mailto:' . APES_CONTACT_EMAIL,
             'telephone' => APES_CONTACT_PHONE,
             'identifier' => APES_CIC_NUMBER,
             'sameAs' => array_values(array_map(

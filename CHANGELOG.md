@@ -2,6 +2,48 @@
 
 Track every major release for this website, including updates, fixes, compliance changes, and user-facing improvements.
 
+## [v4.0.1b] - 2026-08-19
+
+<span class="pill pill-version">Version v4.0.1b</span>
+<span class="pill pill-status">Beta</span>
+<span class="pill pill-type">Changed</span>
+<span class="pill pill-type">Fixed</span>
+
+### Summary
+
+Updated public contact details to the Morris Street address and 01744 374 015, and reduced crawler use of the public email by removing it from JSON-LD and marking mailto links as nofollow.
+
+### Detailed changes
+
+- Replaced the public CIC telephone number `0300 302 0998` with `01744 374 015` in shared PHP contact helpers, contact copy, leftover public HTML snapshots, and README organisation details.
+- Updated the public postal address and registered office to `40 Morris Street, St Helens, Merseyside, WA9 3EN`.
+- Kept `info@apes.org.uk` visible and clickable for visitors, added `rel="nofollow"` to those mailto links, and removed the Organisation schema email field so crawlers are not given a structured harvest target.
+- Left `legal@apes.org.uk`, Shelter and Clinic 0300 lines, and the veterinary emergency number unchanged.
+- Synchronised version files, README, root changelog, public changelog mirror and Change Log Hub release metadata.
+
+### Affected areas
+
+- Website: www.apes.org.uk
+- Page or route: all public routes via shared header, sidebar and footer; `/contact/`, `/contact-centre/`, `/policies/privacy/`, `/policies/terms-of-service/`, Change Log Hub and leftover public HTML snapshots
+- Files changed: shared PHP contact constants and render helpers, contact and policy copy, public HTML snapshots, VERSION files, README, root CHANGELOG, public CHANGELOG and Change Log Hub source
+- User groups affected: public visitors, supporters, staff and partners using published contact details
+- Public impact: visitors now see the current Morris Street address and 01744 number; the public email remains usable but is not advertised in structured data
+- Internal impact: contact details now come from shared PHP helpers, with leftover HTML snapshots aligned so Apache DirectoryIndex cannot serve the old 0300 number
+
+### Version decision
+
+- Previous version: v4.0.0b
+- New version: v4.0.1b
+- Version type: patch beta
+- Reason for version bump: user-visible contact-detail correction without route, architecture or hosting changes.
+
+### Validation
+
+- Checks run: PHP lint on changed includes, local HTTP preview of home, contact, privacy, terms and footer, JSON-LD email absence check, mailto nofollow check, and public-site validation where PHP is available
+- Manual checks completed: contact copy review, Shelter/Clinic 0300 retention review, footer-required link review and Cloudron LAMP compatibility review
+- Known limitations: leftover HTML snapshots remain in `public/` because Apache DirectoryIndex prefers `index.html`; they were updated in place rather than deleted
+- Rollback notes: restore the previous contact constants, schema email field, HTML snapshots and version records if the previous 0300 number or Cross House registered office must return.
+
 ## [v4.0.0b] - 2026-06-11
 
 <span class="pill pill-version">Version v4.0.0b</span>

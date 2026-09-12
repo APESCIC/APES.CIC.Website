@@ -80,10 +80,10 @@ $redirects = [
     '/changelog' => '/change-log-hub/',
     '/change-log/' => '/change-log-hub/',
     '/change-log' => '/change-log-hub/',
-    '/messages' => '/messages/thank-you/',
-    '/messages/' => '/messages/thank-you/',
-    '/messages/volunteer-student-placement-interview-booking-links' => '/messages/thank-you/',
-    '/messages/volunteer-student-placement-interview-booking-links/' => '/messages/thank-you/',
+    '/messages' => '/messages/vol-stu-application-thank-you/',
+    '/messages/' => '/messages/vol-stu-application-thank-you/',
+    '/messages/volunteer-student-placement-interview-booking-links' => '/messages/vol-stu-application-thank-you/',
+    '/messages/volunteer-student-placement-interview-booking-links/' => '/messages/vol-stu-application-thank-you/',
     '/news/post/Introducing-the-new-APES-CareBase/' => 'https://www.apesnews.org.uk/introducing-the-new-myapes-manage-your-details-online/',
     '/news/post/Introducing-the-new-APES-CareBase' => 'https://www.apesnews.org.uk/introducing-the-new-myapes-manage-your-details-online/',
     '/news/post/Urgent-APES-Must-Relocate-by-3-March-2026/' => 'https://www.apesnews.org.uk/tag/apes-cic/',
@@ -101,7 +101,14 @@ $redirects = [
 ];
 
 if (isset($redirects[$decodedPath])) {
-    return apes_router_redirect($redirects[$decodedPath]);
+    $target = $redirects[$decodedPath];
+    $queryString = isset($requestParts['query']) && $requestParts['query'] !== '' ? '?' . $requestParts['query'] : '';
+
+    if ($queryString !== '' && str_starts_with($target, '/')) {
+        $target .= $queryString;
+    }
+
+    return apes_router_redirect($target);
 }
 
 $forbiddenPrefixes = [

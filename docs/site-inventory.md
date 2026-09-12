@@ -24,7 +24,7 @@
 | `/mailing-lists` | Mailing lists | Newsletter and updates signposting | Join a list | External sign-up routes | Rebuilt |
 | `/enterprise-mailing-list` | Enterprise mailing list | Partner and enterprise sign-up | Register interest | Zoho public form | Rebuilt |
 | `/volunteer` | Volunteer and student placements | Volunteer and placement recruitment information | Register interest | Shelter Manager volunteer and student application form | Rebuilt, editorial review still useful |
-| `/messages/thank-you/` | Thank you for your application | Post-application thank-you and interview booking | Book an interview | Outlook APES Bookings | Added for Sheltermanager completion redirect |
+| `/messages/vol-stu-application-thank-you/` | Thank you for your application | Post-application thank-you and interview booking | Book an interview | Outlook APES Bookings | Added for Sheltermanager completion redirect |
 | `/mission/our-main-mission-statement` | Our main mission statement | Public mission and values page | Learn about APES | None | Rebuilt |
 | `/mission/support-ethical-rehabilitation` | Support ethical exotic animal rehabilitation | Rehabilitation and welfare philosophy | Donate or contact APES | Contact centre | Rebuilt |
 | `/the-center` | The centre | Location walkthrough and facilities overview | Contact APES | Contact centre | Rebuilt, unfinished live captions documented |

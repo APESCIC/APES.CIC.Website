@@ -27,10 +27,10 @@ function apes_newsroom_redirects(): array
 function apes_internal_redirects(): array
 {
     return [
-        '/messages' => '/messages/thank-you/',
-        '/messages/' => '/messages/thank-you/',
-        '/messages/volunteer-student-placement-interview-booking-links' => '/messages/thank-you/',
-        '/messages/volunteer-student-placement-interview-booking-links/' => '/messages/thank-you/',
+        '/messages' => '/messages/vol-stu-application-thank-you/',
+        '/messages/' => '/messages/vol-stu-application-thank-you/',
+        '/messages/volunteer-student-placement-interview-booking-links' => '/messages/vol-stu-application-thank-you/',
+        '/messages/volunteer-student-placement-interview-booking-links/' => '/messages/vol-stu-application-thank-you/',
     ];
 }
 
@@ -1651,13 +1651,13 @@ HTML,
 HTML,
                 'related_links' => [
                     ['label' => 'Volunteer application form', 'href' => 'https://service.sheltermanager.com/asmservice?account=apes&method=online_form_html&formid=72', 'external' => true],
-                    ['label' => 'Thank you and interview booking', 'href' => '/messages/thank-you/'],
+                    ['label' => 'Thank you and interview booking', 'href' => '/messages/vol-stu-application-thank-you/'],
                     ['label' => 'Contact centre', 'href' => 'https://contact.apes.org.uk/', 'external' => true],
                     ['label' => 'Help centre', 'href' => 'https://help.apes.org.uk/', 'external' => true],
                 ],
             ],
             'application-thank-you' => [
-                'route' => '/messages/thank-you/',
+                'route' => '/messages/vol-stu-application-thank-you/',
                 'meta_title' => 'Thank you for your application | Book your APES interview',
                 'title' => 'Thank you for your application',
                 'breadcrumb_label' => 'Thank you',
@@ -2907,10 +2907,10 @@ HTML,
         <span class="pill pill-type">Added</span>
       </div>
       <h3>Summary</h3>
-      <p>Added a public thank-you page at <code>/messages/thank-you/</code> so people who finish the volunteer or student application can book an interview.</p>
+      <p>Added a public thank-you page at <code>/messages/vol-stu-application-thank-you/</code> so people who finish the volunteer or student application can book an interview.</p>
       <h3>Detailed changes</h3>
       <ul class="clean-list">
-        <li>Created the public <code>/messages/</code> folder route and a thank-you page with warm confirmation copy and the approved Outlook interview booking links.</li>
+        <li>Created the public <code>/messages/</code> folder and an identifiable thank-you page at <code>/messages/vol-stu-application-thank-you/</code> with warm confirmation copy and the approved Outlook interview booking links.</li>
         <li>Redirected the existing Sheltermanager completion URL <code>/messages/volunteer-student-placement-interview-booking-links</code> to the new thank-you page so successful applicants reach interview booking instead of a missing route.</li>
         <li>Kept all four interview options clearly labelled for student and volunteer, in person and remote, with optional <code>?application=volunteer</code> or <code>?application=student</code> filtering.</li>
         <li>Updated the volunteering page so applicants are told they will reach the thank-you and interview-booking step after submitting the approved form.</li>
@@ -2919,7 +2919,7 @@ HTML,
       <h3>Affected areas</h3>
       <ul class="clean-list">
         <li>Website: www.apes.org.uk</li>
-        <li>Page or route: <code>/messages/thank-you/</code>, Sheltermanager completion redirect, <code>/volunteer/</code>, Change Log Hub, sitemap and release records</li>
+        <li>Page or route: <code>/messages/vol-stu-application-thank-you/</code>, Sheltermanager completion redirect, <code>/volunteer/</code>, Change Log Hub, sitemap and release records</li>
         <li>Files changed: shared PHP site data and rendering, Apache and local-router redirects, public <code>messages</code> folder, volunteer page copy and leftover snapshot, VERSION files, README, root CHANGELOG, public CHANGELOG, sitemap and route documentation</li>
         <li>User groups affected: prospective volunteers, student-placement applicants and staff reviewing post-application booking</li>
         <li>Public impact: successful volunteer and student applicants can thank APES and book the matching interview from the public website</li>

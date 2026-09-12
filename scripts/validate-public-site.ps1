@@ -260,9 +260,9 @@ try {
         "/policies/privacy/",
         "/mission/our-main-mission-statement/",
         "/change-log-hub/",
-        "/messages/thank-you/",
-        "/messages/thank-you/?application=volunteer",
-        "/messages/thank-you/?application=student",
+        "/messages/vol-stu-application-thank-you/",
+        "/messages/vol-stu-application-thank-you/?application=volunteer",
+        "/messages/vol-stu-application-thank-you/?application=student",
         "/24-7-services/",
         "/robots.txt",
         "/sitemap.xml",
@@ -323,20 +323,23 @@ try {
     Assert-ApesContains -Content $responses["/search/"].Content -ExpectedText "Search the site to see results." -Label "/search/"
     Assert-ApesContains -Content $responses["/search/?q=volunteer"].Content -ExpectedText 'Search results for "volunteer"' -Label "/search/?q=volunteer"
 
-    $thankYou = $responses["/messages/thank-you/"].Content
-    Assert-ApesContains -Content $thankYou -ExpectedText "Thank you for your application" -Label "/messages/thank-you/"
-    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/ng1nE8bZkk6_ftWWQYXjQA2?ismsaljsauthenabled" -Label "/messages/thank-you/ student in person"
-    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/3iFA695k4UiUuZQj4x-RVQ2?ismsaljsauthenabled" -Label "/messages/thank-you/ student remote"
-    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/A68RwVNGOk2A4h2lquenDQ2?ismsaljsauthenabled" -Label "/messages/thank-you/ volunteer in person"
-    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/kCnebQbkBEycaLDScqNdfA2?ismsaljsauthenabled" -Label "/messages/thank-you/ volunteer remote"
+    $thankYou = $responses["/messages/vol-stu-application-thank-you/"].Content
+    Assert-ApesContains -Content $thankYou -ExpectedText "Thank you for your application" -Label "/messages/vol-stu-application-thank-you/"
+    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/ng1nE8bZkk6_ftWWQYXjQA2?ismsaljsauthenabled" -Label "/messages/vol-stu-application-thank-you/ student in person"
+    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/3iFA695k4UiUuZQj4x-RVQ2?ismsaljsauthenabled" -Label "/messages/vol-stu-application-thank-you/ student remote"
+    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/A68RwVNGOk2A4h2lquenDQ2?ismsaljsauthenabled" -Label "/messages/vol-stu-application-thank-you/ volunteer in person"
+    Assert-ApesContains -Content $thankYou -ExpectedText "https://outlook.office.com/book/APESBookings@apes.org.uk/s/kCnebQbkBEycaLDScqNdfA2?ismsaljsauthenabled" -Label "/messages/vol-stu-application-thank-you/ volunteer remote"
 
-    Assert-ApesContains -Content $responses["/messages/thank-you/?application=volunteer"].Content -ExpectedText "Book a volunteer interview in person" -Label "/messages/thank-you/?application=volunteer"
-    Assert-ApesContains -Content $responses["/messages/thank-you/?application=student"].Content -ExpectedText "Book a student interview in person" -Label "/messages/thank-you/?application=student"
+    Assert-ApesContains -Content $responses["/messages/vol-stu-application-thank-you/?application=volunteer"].Content -ExpectedText "Book a volunteer interview in person" -Label "/messages/vol-stu-application-thank-you/?application=volunteer"
+    Assert-ApesContains -Content $responses["/messages/vol-stu-application-thank-you/?application=student"].Content -ExpectedText "Book a student interview in person" -Label "/messages/vol-stu-application-thank-you/?application=student"
 
-    $completionRedirect = Invoke-ApesHttpRequest -Uri ($baseUri + "/messages/volunteer-student-placement-interview-booking-links") -NoRedirect
+    $removedThankYou = Invoke-ApesHttpRequest -Uri ($baseUri + "/messages/thank-you/")
+    Assert-ApesStatus -Response $removedThankYou -ExpectedStatusCode 404 -Label "removed /messages/thank-you/"
+
+    $completionRedirect = Invoke-ApesHttpRequest -Uri ($baseUri + "/messages/volunteer-student-placement-interview-booking-links?application=volunteer") -NoRedirect
     Assert-ApesStatus -Response $completionRedirect -ExpectedStatusCode 301 -Label "Sheltermanager completion redirect"
-    if ($completionRedirect.Headers["Location"] -ne "/messages/thank-you/") {
-        throw "Sheltermanager completion redirect target should be '/messages/thank-you/' but was '$($completionRedirect.Headers["Location"])'."
+    if ($completionRedirect.Headers["Location"] -ne "/messages/vol-stu-application-thank-you/?application=volunteer") {
+        throw "Sheltermanager completion redirect target should be '/messages/vol-stu-application-thank-you/?application=volunteer' but was '$($completionRedirect.Headers["Location"])'."
     }
 
     Write-Host "Validation passed:"

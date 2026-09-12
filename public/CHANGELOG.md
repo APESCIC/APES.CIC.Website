@@ -6,11 +6,11 @@
 
 ### Summary
 
-Added a public thank-you page at `/messages/thank-you/` so people who finish the volunteer or student application can book an interview.
+Added a public thank-you page at `/messages/vol-stu-application-thank-you/` so people who finish the volunteer or student application can book an interview.
 
 ### Detailed changes
 
-- Created the public `/messages/` folder route and a thank-you page with warm confirmation copy and the approved Outlook interview booking links.
+- Created the public `/messages/` folder and an identifiable thank-you page at `/messages/vol-stu-application-thank-you/` with warm confirmation copy and the approved Outlook interview booking links.
 - Redirected the existing Sheltermanager completion URL `/messages/volunteer-student-placement-interview-booking-links` to the new thank-you page so successful applicants reach interview booking instead of a missing route.
 - Kept all four interview options clearly labelled for student and volunteer, in person and remote, with optional `?application=volunteer` or `?application=student` filtering.
 - Updated the volunteering page so applicants are told they will reach the thank-you and interview-booking step after submitting the approved form.
@@ -19,7 +19,7 @@ Added a public thank-you page at `/messages/thank-you/` so people who finish the
 ### Affected areas
 
 - Website: www.apes.org.uk
-- Page or route: `/messages/thank-you/`, Sheltermanager completion redirect, `/volunteer/`, Change Log Hub, sitemap and release records
+- Page or route: `/messages/vol-stu-application-thank-you/`, Sheltermanager completion redirect, `/volunteer/`, Change Log Hub, sitemap and release records
 - Files changed: shared PHP site data and rendering, Apache and local-router redirects, public `messages` folder, volunteer page copy and leftover snapshot, VERSION files, README, root CHANGELOG, public CHANGELOG, sitemap and route documentation
 - User groups affected: prospective volunteers, student-placement applicants and staff reviewing post-application booking
 - Public impact: successful volunteer and student applicants can thank APES and book the matching interview from the public website

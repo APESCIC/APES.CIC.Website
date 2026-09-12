@@ -10,7 +10,9 @@ $internalRedirect = apes_internal_redirects()[$requestPath]
     ?? null;
 
 if ($internalRedirect !== null) {
-    header('Location: ' . $internalRedirect, true, 301);
+    $queryString = $_SERVER['QUERY_STRING'] ?? '';
+    $target = $internalRedirect . ($queryString !== '' ? '?' . $queryString : '');
+    header('Location: ' . $target, true, 301);
     exit;
 }
 

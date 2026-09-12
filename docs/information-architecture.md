@@ -73,7 +73,7 @@ The rebuild keeps the current public route coverage while reorganising the site 
 - Change Log Hub
 - Legacy `news/post/*` bridge pages
 - Search
-- Application thank-you and interview booking (`/messages/thank-you/`)
+- Application thank-you and interview booking (`/messages/vol-stu-application-thank-you/`)
 
 ## Pages merged or cross-linked
 

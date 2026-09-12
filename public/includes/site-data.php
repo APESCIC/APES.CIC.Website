@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const APES_FALLBACK_VERSION = 'v4.0.1b';
+const APES_FALLBACK_VERSION = 'v4.1.0b';
 const APES_SITE_NAME = 'Association of Protecting Exotic Species CIC';
 const APES_CIC_NUMBER = '16253848';
 const APES_CONTACT_EMAIL = 'info@apes.org.uk';
@@ -22,6 +22,117 @@ function apes_newsroom_redirects(): array
         '/news/tag/moving-properties/' => 'https://www.apesnews.org.uk/tag/apes-cic/',
         '/news/tag/funds/' => 'https://www.apesnews.org.uk/tag/apes-donor-community/',
     ];
+}
+
+function apes_internal_redirects(): array
+{
+    return [
+        '/messages' => '/messages/vol-stu-application-thank-you/',
+        '/messages/' => '/messages/vol-stu-application-thank-you/',
+        '/messages/volunteer-student-placement-interview-booking-links' => '/messages/vol-stu-application-thank-you/',
+        '/messages/volunteer-student-placement-interview-booking-links/' => '/messages/vol-stu-application-thank-you/',
+    ];
+}
+
+function apes_application_interview_type(): string
+{
+    $raw = strtolower(trim((string) ($_GET['application'] ?? $_GET['type'] ?? '')));
+
+    return match ($raw) {
+        'volunteer', 'volunteering' => 'volunteer',
+        'student', 'placement', 'student-placement', 'student_placement' => 'student',
+        default => 'all',
+    };
+}
+
+/**
+ * @return list<array{key: string, title: string, summary: string, label: string, href: string}>
+ */
+function apes_application_interview_bookings(): array
+{
+    return [
+        [
+            'key' => 'student',
+            'title' => 'Student interview in person',
+            'summary' => 'Meet the APES team at the centre to talk through your student placement application.',
+            'label' => 'Book a student interview in person',
+            'href' => 'https://outlook.office.com/book/APESBookings@apes.org.uk/s/ng1nE8bZkk6_ftWWQYXjQA2?ismsaljsauthenabled',
+        ],
+        [
+            'key' => 'student',
+            'title' => 'Student interview remote',
+            'summary' => 'Join a remote student-placement interview if that is a better fit than travelling to the centre.',
+            'label' => 'Book a student interview remotely',
+            'href' => 'https://outlook.office.com/book/APESBookings@apes.org.uk/s/3iFA695k4UiUuZQj4x-RVQ2?ismsaljsauthenabled',
+        ],
+        [
+            'key' => 'volunteer',
+            'title' => 'Volunteer interview in person',
+            'summary' => 'Meet the APES team at the centre to talk through your volunteer application.',
+            'label' => 'Book a volunteer interview in person',
+            'href' => 'https://outlook.office.com/book/APESBookings@apes.org.uk/s/A68RwVNGOk2A4h2lquenDQ2?ismsaljsauthenabled',
+        ],
+        [
+            'key' => 'volunteer',
+            'title' => 'Volunteer interview remote',
+            'summary' => 'Join a remote volunteer interview if that is a better fit than travelling to the centre.',
+            'label' => 'Book a volunteer interview remotely',
+            'href' => 'https://outlook.office.com/book/APESBookings@apes.org.uk/s/kCnebQbkBEycaLDScqNdfA2?ismsaljsauthenabled',
+        ],
+    ];
+}
+
+function apes_application_thank_you_content_html(): string
+{
+    $type = apes_application_interview_type();
+    $bookings = array_values(array_filter(
+        apes_application_interview_bookings(),
+        static fn (array $booking): bool => $type === 'all' || $booking['key'] === $type
+    ));
+
+    $intro = match ($type) {
+        'volunteer' => 'Thank you for applying to volunteer with APES CIC. We are grateful that you want to help us protect exotic animals and support the people who care for them.',
+        'student' => 'Thank you for applying for a student placement with APES CIC. We are grateful that you want to learn with us while helping to protect exotic animals.',
+        default => 'Thank you for applying to volunteer or for a student placement with APES CIC. We are grateful that you want to help us protect exotic animals and support the people who care for them.',
+    };
+
+    $heading = match ($type) {
+        'volunteer' => 'Book your volunteer interview',
+        'student' => 'Book your student interview',
+        default => 'Book your interview',
+    };
+
+    $guidance = match ($type) {
+        'volunteer' => 'Please book a volunteer interview so we can talk through your application, answer questions and agree the next steps. Choose an in-person or remote appointment.',
+        'student' => 'Please book a student interview so we can talk through your placement application, answer questions and agree the next steps. Choose an in-person or remote appointment.',
+        default => 'Please book an interview so we can talk through your application, answer questions and agree the next steps. Choose the option that matches how you applied, then decide whether you would prefer to meet in person or remotely.',
+    };
+
+    ob_start();
+    ?>
+<div class="note-panel">
+  <h2>Thank you for your application</h2>
+  <p><?= htmlspecialchars($intro, ENT_QUOTES) ?></p>
+  <p><?= htmlspecialchars($guidance, ENT_QUOTES) ?></p>
+</div>
+<div class="section-heading">
+  <p class="eyebrow">Interview booking</p>
+  <h2><?= htmlspecialchars($heading, ENT_QUOTES) ?></h2>
+</div>
+<div class="card-grid card-grid-two booking-choice-grid">
+  <?php foreach ($bookings as $booking): ?>
+    <article class="info-card booking-choice-card">
+      <h3><?= htmlspecialchars($booking['title'], ENT_QUOTES) ?></h3>
+      <p><?= htmlspecialchars($booking['summary'], ENT_QUOTES) ?></p>
+      <div class="action-stack">
+        <a class="button button-primary" href="<?= htmlspecialchars($booking['href'], ENT_QUOTES) ?>" target="_blank" rel="noopener noreferrer"><?= htmlspecialchars($booking['label'], ENT_QUOTES) ?></a>
+      </div>
+    </article>
+  <?php endforeach; ?>
+</div>
+    <?php
+
+    return trim((string) ob_get_clean());
 }
 
 function apes_error_pages(): array
@@ -1446,6 +1557,7 @@ HTML,
   <div class="note-panel">
     <h2>Apply through the approved volunteer form</h2>
     <p>Use the APES volunteer application form to register your interest. APES will review suitability, availability, training needs and role fit before confirming any volunteer placement.</p>
+    <p>After you submit the form, you will reach a thank-you page where you can book a volunteer or student interview.</p>
     <div class="action-row">
       <a class="button button-primary" href="https://service.sheltermanager.com/asmservice?account=apes&amp;method=online_form_html&amp;formid=72" target="_blank" rel="noopener noreferrer">Apply to volunteer</a>
     </div>
@@ -1538,6 +1650,33 @@ HTML,
 </section>
 HTML,
                 'related_links' => [
+                    ['label' => 'Volunteer application form', 'href' => 'https://service.sheltermanager.com/asmservice?account=apes&method=online_form_html&formid=72', 'external' => true],
+                    ['label' => 'Thank you and interview booking', 'href' => '/messages/vol-stu-application-thank-you/'],
+                    ['label' => 'Contact centre', 'href' => 'https://contact.apes.org.uk/', 'external' => true],
+                    ['label' => 'Help centre', 'href' => 'https://help.apes.org.uk/', 'external' => true],
+                ],
+            ],
+            'application-thank-you' => [
+                'route' => '/messages/vol-stu-application-thank-you/',
+                'meta_title' => 'Thank you for your application | Book your APES interview',
+                'title' => 'Thank you for your application',
+                'breadcrumb_label' => 'Thank you',
+                'description' => 'Thank you for applying to volunteer or for a student placement with APES CIC. Book an in-person or remote interview to talk through the next steps.',
+                'hero_kicker' => 'Application received',
+                'hero_title' => 'Thank you for applying to support APES.',
+                'hero_summary' => 'Your application is with the APES team. Please book an interview so we can talk through the next steps with you.',
+                'hero_actions' => [
+                    ['label' => 'Book an interview', 'href' => '#interview-booking', 'variant' => 'primary'],
+                    ['label' => 'Return to volunteering', 'href' => '/volunteer/', 'variant' => 'secondary'],
+                ],
+                'pills' => ['Thank you', 'Interview booking', 'Volunteer and student'],
+                'body_html' => <<<'HTML'
+<section class="section-shell" id="interview-booking">
+[[APPLICATION_THANK_YOU_CONTENT]]
+</section>
+HTML,
+                'related_links' => [
+                    ['label' => 'Volunteer and student placements', 'href' => '/volunteer/'],
                     ['label' => 'Volunteer application form', 'href' => 'https://service.sheltermanager.com/asmservice?account=apes&method=online_form_html&formid=72', 'external' => true],
                     ['label' => 'Contact centre', 'href' => 'https://contact.apes.org.uk/', 'external' => true],
                     ['label' => 'Help centre', 'href' => 'https://help.apes.org.uk/', 'external' => true],
@@ -2726,9 +2865,9 @@ HTML,
                 'hero_summary' => 'Track every major release for this website, including updates, fixes, compliance changes, and user-facing improvements.',
                 'hero_actions' => [
                     ['label' => 'Expand all releases', 'href' => '#release-list', 'variant' => 'primary'],
-                    ['label' => 'View current release', 'href' => '#release-v401b', 'variant' => 'secondary'],
+                    ['label' => 'View current release', 'href' => '#release-v410b', 'variant' => 'secondary'],
                 ],
-                'pills' => ['Current version ' . $siteVersion, 'Patch beta', 'Public contact details'],
+                'pills' => ['Current version ' . $siteVersion, 'Minor beta', 'Application thank you'],
                 'body_html' => <<<'HTML'
 <section class="section-shell">
   <div class="release-tools">
@@ -2756,7 +2895,53 @@ HTML,
 </section>
 
 <section class="section-shell" id="release-list">
-  <details class="release-card" data-release-card data-tags="current beta changed fixed public-facing" open id="release-v401b">
+  <details class="release-card" data-release-card data-tags="current beta added public-facing" open id="release-v410b">
+    <summary>
+      <span class="release-version">v4.1.0b</span>
+      <span class="release-date">2026-09-12</span>
+    </summary>
+    <div class="release-body">
+      <div class="pill-row">
+        <span class="pill pill-version">Version v4.1.0b</span>
+        <span class="pill pill-status">Beta</span>
+        <span class="pill pill-type">Added</span>
+      </div>
+      <h3>Summary</h3>
+      <p>Added a public thank-you page at <code>/messages/vol-stu-application-thank-you/</code> so people who finish the volunteer or student application can book an interview.</p>
+      <h3>Detailed changes</h3>
+      <ul class="clean-list">
+        <li>Created the public <code>/messages/</code> folder and an identifiable thank-you page at <code>/messages/vol-stu-application-thank-you/</code> with warm confirmation copy and the approved Outlook interview booking links.</li>
+        <li>Redirected the existing Sheltermanager completion URL <code>/messages/volunteer-student-placement-interview-booking-links</code> to the new thank-you page so successful applicants reach interview booking instead of a missing route.</li>
+        <li>Kept all four interview options clearly labelled for student and volunteer, in person and remote, with optional <code>?application=volunteer</code> or <code>?application=student</code> filtering.</li>
+        <li>Updated the volunteering page so applicants are told they will reach the thank-you and interview-booking step after submitting the approved form.</li>
+        <li>Synchronised version files, README, root changelog, public changelog mirror, sitemap and Change Log Hub release metadata.</li>
+      </ul>
+      <h3>Affected areas</h3>
+      <ul class="clean-list">
+        <li>Website: www.apes.org.uk</li>
+        <li>Page or route: <code>/messages/vol-stu-application-thank-you/</code>, Sheltermanager completion redirect, <code>/volunteer/</code>, Change Log Hub, sitemap and release records</li>
+        <li>Files changed: shared PHP site data and rendering, Apache and local-router redirects, public <code>messages</code> folder, volunteer page copy and leftover snapshot, VERSION files, README, root CHANGELOG, public CHANGELOG, sitemap and route documentation</li>
+        <li>User groups affected: prospective volunteers, student-placement applicants and staff reviewing post-application booking</li>
+        <li>Public impact: successful volunteer and student applicants can thank APES and book the matching interview from the public website</li>
+        <li>Internal impact: the existing Sheltermanager redirect now has a maintained on-site destination instead of a missing <code>/messages/</code> route</li>
+      </ul>
+      <h3>Version decision</h3>
+      <ul class="clean-list">
+        <li>Previous version: v4.0.1b</li>
+        <li>New version: v4.1.0b</li>
+        <li>Version type: minor beta</li>
+        <li>Reason for version bump: new public thank-you route and interview-booking step after volunteer and student applications.</li>
+      </ul>
+      <h3>Validation</h3>
+      <ul class="clean-list">
+        <li>Checks run: PHP lint on changed includes, local PHP preview of the thank-you page and completion redirect, exact Outlook URL review, volunteer form-link review and public-site validation where available</li>
+        <li>Manual checks completed: thank-you copy review, student and volunteer booking-label review, footer-required link review and Cloudron LAMP compatibility review</li>
+        <li>Known limitations: the Sheltermanager form itself remains hosted externally; this repository can only receive the form's existing completion redirect</li>
+        <li>Rollback notes: restore the previous site data, redirects, volunteer copy, version files and release records if the thank-you page needs to be removed.</li>
+      </ul>
+    </div>
+  </details>
+  <details class="release-card" data-release-card data-tags="beta changed fixed public-facing" id="release-v401b">
     <summary>
       <span class="release-version">v4.0.1b</span>
       <span class="release-date">2026-08-19</span>
@@ -4160,6 +4345,7 @@ function apes_breadcrumb_section(string $section): array
         'about-us' => ['label' => 'About APES', 'href' => '/about-us/'],
         'contact-centre' => ['label' => 'Contact centre', 'href' => '/contact-centre/'],
         'change-log-hub' => ['label' => 'Change Log Hub', 'href' => '/change-log-hub/'],
+        'messages' => ['label' => 'Volunteer and placements', 'href' => '/volunteer/'],
         default => ['label' => ucwords(str_replace('-', ' ', $section))],
     };
 }

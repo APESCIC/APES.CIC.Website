@@ -215,7 +215,7 @@ if (!function_exists('apes_current_page')) {
     {
         return match ($pageKey) {
             'about-us', 'news', 'change-log-hub', 'search', 'socials', 'apes-communities', 'our-main-mission-statement', 'support-ethical-rehabilitation', 'the-center', 'opening-times', 'policies', 'terms-of-service', 'privacy', 'cookies', 'adoption-policy', 're-homing-policy', 'euthanasia-policy' => 'information',
-            'sponsors', 'volunteer', 'donate', 'enterprise-mailing-list', 'help-us-move' => 'support',
+            'sponsors', 'volunteer', 'application-thank-you', 'donate', 'enterprise-mailing-list', 'help-us-move' => 'support',
             'contact' => 'contact',
             'home' => 'home',
             default => 'services',
@@ -402,6 +402,7 @@ if (!function_exists('apes_current_page')) {
             ),
             '[[SOCIAL_PRIMARY_GRID]]' => apes_render_social_cards(apes_social_links_for_placement($site['social_profiles'] ?? [], 'socials-primary')),
             '[[SOCIAL_COMMUNITY_GRID]]' => apes_render_social_cards(apes_social_links_for_placement($site['social_profiles'] ?? [], 'socials-community')),
+            '[[APPLICATION_THANK_YOU_CONTENT]]' => apes_application_thank_you_content_html(),
         ];
 
         if (preg_match_all('/\[\[FEATURE_MEDIA:([a-z0-9\-]+)\]\]/i', $bodyHtml, $matches)) {

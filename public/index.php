@@ -5,10 +5,14 @@ require_once __DIR__ . '/includes/site-data.php';
 
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $requestPath = apes_path_from_request_uri($requestUri);
-$newsroomRedirect = apes_newsroom_redirects()[$requestPath] ?? null;
+$internalRedirect = apes_internal_redirects()[$requestPath]
+    ?? apes_newsroom_redirects()[$requestPath]
+    ?? null;
 
-if ($newsroomRedirect !== null) {
-    header('Location: ' . $newsroomRedirect, true, 301);
+if ($internalRedirect !== null) {
+    $queryString = $_SERVER['QUERY_STRING'] ?? '';
+    $target = $internalRedirect . ($queryString !== '' ? '?' . $queryString : '');
+    header('Location: ' . $target, true, 301);
     exit;
 }
 

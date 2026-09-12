@@ -28,6 +28,10 @@ RewriteRule ^missions/support-ethical-rehabilitation/?$ /mission/support-ethical
 RewriteRule ^changelog/?$ /change-log-hub/ [R=301,L]
 RewriteRule ^change-log/?$ /change-log-hub/ [R=301,L]
 
+# Sheltermanager application completion URL and messages folder index.
+RewriteRule ^messages/volunteer-student-placement-interview-booking-links/?$ /messages/vol-stu-application-thank-you/ [R=301,L,QSA]
+RewriteRule ^messages/?$ /messages/vol-stu-application-thank-you/ [R=301,L,QSA]
+
 # Legacy main-site news routes now resolve through APES Newsroom successor pages.
 RewriteRule ^news/post/Introducing-the-new-APES-CareBase/?$ https://www.apesnews.org.uk/introducing-the-new-myapes-manage-your-details-online/ [R=301,L]
 RewriteRule ^news/post/Urgent-APES-Must-Relocate-by-3-March-2026/?$ https://www.apesnews.org.uk/tag/apes-cic/ [R=301,L]

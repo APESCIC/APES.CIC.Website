@@ -1,3 +1,44 @@
+## [v4.1.0b] - 2026-09-12
+
+<span class="pill pill-version">Version v4.1.0b</span>
+<span class="pill pill-status">Beta</span>
+<span class="pill pill-type">Added</span>
+
+### Summary
+
+Added a public thank-you page at `/messages/vol-stu-application-thank-you/` so people who finish the volunteer or student application can book an interview.
+
+### Detailed changes
+
+- Created the public `/messages/` folder and an identifiable thank-you page at `/messages/vol-stu-application-thank-you/` with warm confirmation copy and the approved Outlook interview booking links.
+- Redirected the existing Sheltermanager completion URL `/messages/volunteer-student-placement-interview-booking-links` to the new thank-you page so successful applicants reach interview booking instead of a missing route.
+- Kept all four interview options clearly labelled for student and volunteer, in person and remote, with optional `?application=volunteer` or `?application=student` filtering.
+- Updated the volunteering page so applicants are told they will reach the thank-you and interview-booking step after submitting the approved form.
+- Synchronised version files, README, root changelog, public changelog mirror, sitemap and Change Log Hub release metadata.
+
+### Affected areas
+
+- Website: www.apes.org.uk
+- Page or route: `/messages/vol-stu-application-thank-you/`, Sheltermanager completion redirect, `/volunteer/`, Change Log Hub, sitemap and release records
+- Files changed: shared PHP site data and rendering, Apache and local-router redirects, public `messages` folder, volunteer page copy and leftover snapshot, VERSION files, README, root CHANGELOG, public CHANGELOG, sitemap and route documentation
+- User groups affected: prospective volunteers, student-placement applicants and staff reviewing post-application booking
+- Public impact: successful volunteer and student applicants can thank APES and book the matching interview from the public website
+- Internal impact: the existing Sheltermanager redirect now has a maintained on-site destination instead of a missing `/messages/` route
+
+### Version decision
+
+- Previous version: v4.0.1b
+- New version: v4.1.0b
+- Version type: minor beta
+- Reason for version bump: new public thank-you route and interview-booking step after volunteer and student applications.
+
+### Validation
+
+- Checks run: PHP lint on changed includes, local PHP preview of the thank-you page and completion redirect, exact Outlook URL review, volunteer form-link review and public-site validation where available
+- Manual checks completed: thank-you copy review, student and volunteer booking-label review, footer-required link review and Cloudron LAMP compatibility review
+- Known limitations: the Sheltermanager form itself remains hosted externally; this repository can only receive the form's existing completion redirect
+- Rollback notes: restore the previous site data, redirects, volunteer copy, version files and release records if the thank-you page needs to be removed.
+
 ## [v4.0.1b] - 2026-08-19
 
 <span class="pill pill-version">Version v4.0.1b</span>

@@ -17,6 +17,9 @@
 | `/mailing-lists` | `/mailing-lists/` | Preserved | Public updates route |
 | `/enterprise-mailing-list` | `/enterprise-mailing-list/` | Preserved | Public sign-up route |
 | `/volunteer` | `/volunteer/` | Preserved | Public recruitment route |
+| `/messages/thank-you/` | `/messages/thank-you/` | Added | Post-application thank-you and interview booking |
+| `/messages` | `/messages/thank-you/` | Redirected | Messages folder alias |
+| `/messages/volunteer-student-placement-interview-booking-links` | `/messages/thank-you/` | Redirected | Existing Sheltermanager application completion URL |
 | `/mission/our-main-mission-statement` | `/mission/our-main-mission-statement/` | Preserved | Public mission route |
 | `/mission/support-ethical-rehabilitation` | `/mission/support-ethical-rehabilitation/` | Preserved | Public mission route |
 | `/the-center` | `/the-center/` | Preserved | Public location route, live URL spelling retained |

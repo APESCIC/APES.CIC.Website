@@ -1,8 +1,8 @@
 ## Current release
 
-- Version: `v4.0.1b`
-- Release date: `2026-08-19`
-- Release impact: updated public contact details to 40 Morris Street, St Helens, Merseyside, WA9 3EN and 01744 374 015, and stopped exposing `info@apes.org.uk` through JSON-LD while keeping a nofollow mailto for visitors.
+- Version: `v4.1.0b`
+- Release date: `2026-09-12`
+- Release impact: added a public thank-you page at `/messages/thank-you/` so people who finish the volunteer or student application can book an interview, and pointed the existing Sheltermanager completion URL to that page.
 - Operational note: preview the site with `scripts/preview-php-source-site.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and package only the `public/` bundle for Cloudron upload.
 
 <p align="center">

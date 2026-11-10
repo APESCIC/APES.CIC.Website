@@ -1,0 +1,49 @@
+---
+description: How every milestone is versioned, named, worked and shipped - once, by its version number
+alwaysApply: true
+---
+
+# Version shipping
+
+This is the one rule for how work ships in this repository. `AGENTS.md`, `CONTRIBUTING.md`, the `complete-next-version` and `release-version` skills and the `/complete-next-version` command point here.
+
+## The version
+
+- A milestone's version is the `vMAJOR.MINOR.PATCH` at the start of its GitHub milestone title, with an optional suffix: `v1.3.0 Beta: Public UX & compliance`. Read it from the title, never from GitHub's milestone number. "Beta" lives in the milestone title, not in `VERSION`.
+- **The next version** is the open milestone with the lowest version above the latest released tag, compared as semver (`v0.9.0` < `v0.10.0`). `php scripts/milestone-version next` prints it with its branch, PR and release titles.
+- Semantic versioning: MAJOR for breaking route, journey, hosting or compliance changes, MINOR for new pages and features, PATCH for fixes, copy and maintenance. The milestone title sets the version, so issues never bump it.
+- Stop and report to Bambie, without guessing, if a milestone title does not start with a valid `vMAJOR.MINOR.PATCH`, or its version is not above the latest tag, or the version is already taken on `main`. Don't rename, create or delete milestones yourself.
+
+## Names built from the version
+
+| Item | Format | Example (`v1.3.0 Beta: Public UX & compliance`) |
+| --- | --- | --- |
+| Milestone branch | `milestone/v<MAJOR>-<MINOR>-<PATCH>-<slug>` (printed by `next`) | `milestone/v1-3-0-public-ux-compliance` |
+| Milestone PR into `main` | `v<version>: <milestone name>` | `v1.3.0: Public UX & compliance` |
+| Commits | Conventional Commits with `Refs #<issue>` | `fix: correct the donate link (Refs #123)` |
+| Release history | `## [X.Y.Z] - YYYY-MM-DD` in `CHANGELOG.md` and `public/CHANGELOG.md`, plus the Change Log Hub page | `## [1.3.0] - 2026-11-09` |
+| Tag | `v<version>` | `v1.3.0` |
+| GitHub Release title | `v<version> <milestone name>` | `v1.3.0 Public UX & compliance` |
+
+- Never write "Milestone 7", "#7", "[#7]", "M7" or "/milestone/7" in a branch, title, commit subject, tag or release.
+- Check names with `php scripts/milestone-version check-title "<title>"`, `check-branch "<branch>"` and `check-release vX.Y.Z "<release title>"`. CI runs the title and branch checks on every pull request.
+- Version fields, listed in `scripts/MilestoneVersion/fields.json`: `VERSION`, `public/VERSION` and every footer or page that repeats the version. `php scripts/milestone-version bump vX.Y.Z` sets them all once per milestone; past entries in the change log pages are never rewritten.
+
+## The flow: one version ships once
+
+1. **Start.** Run the live preview gate (`laragon-local-dev.mdc`). Then `php scripts/milestone-version next`. Create the milestone branch from `origin/main` if it is missing (`git push -u origin HEAD`), otherwise merge `origin/main` into it. Merge `origin/dependencies` into it with a merge commit. Stop on any conflict.
+2. **Work.** Commit every issue in the milestone on the milestone branch, in small Conventional Commits with `Refs #<n>`; there are no per-issue branches. Open one draft PR into `main` after the first commit, titled `v<version>: <milestone name>`, listing `Closes #<n>` for every issue. Post the Committed comment on each issue when its work is committed (`Add-IssueUpdate.ps1`); it closes when the PR merges. Keep going until every issue is committed, or moved to a later version with Bambie's approval.
+3. **Merge.** Run `php scripts/milestone-version bump vX.Y.Z`, add the `## [X.Y.Z] - YYYY-MM-DD` entry to both change logs and the Change Log Hub, and make that the last commit, `chore: release vX.Y.Z`. `gh pr ready`, wait for `ci` to go green, then ask the ship-gate question (`ship-gate` skill). On "merge": `gh pr merge --merge`, one merge commit, never a squash or rebase.
+4. **Release.** Push one tag `vX.Y.Z` on that merge commit. `release.yml` checks it against `VERSION` and `main` and publishes the GitHub Release titled `v<version> <milestone name>`.
+5. **Deploy.** One Cloudron deploy of that tag: `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`. Evidence is its output and `https://www.apes.org.uk/VERSION` showing the tag's version.
+6. **Close out** with `Close-IssueTree.ps1` and `Close-Milestone.ps1`, then merge `origin/main` into `dependencies`.
+
+## Hotfixes
+
+Only with Bambie's approval through AskQuestion, recorded on the issue: a `cursor/fix/<issue>-<slug>` branch from `origin/main`, released as `vX.Y.(Z+1)` through the same merge, release and deploy steps, then `main` merged back into the open milestone branch.
+
+## Never
+
+- Force-push, `reset --hard` or rebase a shared branch.
+- Merge, tag, release or deploy after a single issue, or without the ship-gate answer in the current chat.
+- Claim a step happened without its command output.

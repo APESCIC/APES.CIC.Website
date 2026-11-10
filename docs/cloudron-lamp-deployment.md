@@ -1,71 +1,42 @@
 # Cloudron LAMP deployment
 
-- Target hostname: `[TARGET_HOSTNAME]`
-- Cloudron app ID: `[CLOUDRON_APP_ID]`
+- Target hostname: `www.apes.org.uk`
+- Cloudron app ID: `cfeb1a50-eb8d-4cfd-ac84-a0606c6051ec`
 - Target public webroot: `/app/data/public`
 - Apache override path: `/app/data/apache/app.conf`
-- PHP assumption: standard Cloudron LAMP PHP runtime
-- MySQL usage: not required for this rebuild
-- SMTP usage: not required for this rebuild
-- phpMyAdmin: not required
+- PHP: 8.4, set by `/app/data/PHP_VERSION`
+- MySQL, SMTP and phpMyAdmin: not used by this site
 
 ## Source-of-truth rendering workflow
 
-- Shared PHP under `public/index.php` and `public/includes/` remains the canonical source of truth.
-- Local HTTP preview parity now runs through `dev/router.php` with:
-  `php -S 127.0.0.1:8080 -t public dev/router.php`
-- Optional static export output can be generated with:
-  `php scripts/export-static-site.php`
-- On Windows workstations, the same export can be run with:
-  `powershell -ExecutionPolicy Bypass -File .\scripts\export-static-site.ps1`
-- Optional static export output is written to `dist/static-export` and is not checked back into `public/`.
+- Shared PHP under `public/index.php` and `public/includes/` is the canonical source of truth.
+- Local preview runs in Laragon (`http://apes-cic-website.test`), whose Apache applies the same `public/.htaccess` rules as Cloudron. See `docs/laragon/profile.md`.
+- Optional static snapshots: `powershell -ExecutionPolicy Bypass -File .\scripts\export-static-site.ps1` writes `dist/static-export`, which is never copied back into `public/` or deployed.
 
-## Repository helpers
+Do not publish `docs/`, root governance files, local logs or private notes. Only `public/` is deployed.
 
-- Preview shared PHP locally: `powershell -ExecutionPolicy Bypass -File .\scripts\preview-php-source-site.ps1`
-- Export optional static snapshots: `powershell -ExecutionPolicy Bypass -File .\scripts\export-static-site.ps1`
-- Validate the public site: `powershell -ExecutionPolicy Bypass -File .\scripts\validate-public-site.ps1`
-- Stage a deployable public bundle: `powershell -ExecutionPolicy Bypass -File .\scripts\stage-cloudron-public.ps1`
-- Package a ZIP bundle: `powershell -ExecutionPolicy Bypass -File .\scripts\package-cloudron-public.ps1`
+## Deploying a release
 
-## Deployment method
+Work ships once per milestone (`.cursor/rules/version-shipping.mdc`). After the ship gate, with the release tag published:
 
-- Preferred: upload only the contents of `public/` into `/app/data/public`
-- Staging helper output: `dist/cloudron-public`
-- ZIP bundle output: `dist/cloudron-public.zip`
-- GitHub workflow scaffold: `.github/workflows/build-cloudron-public-bundle.yml`
-- Validation workflow scaffold: `.github/workflows/validate-public-site.yml`
+```powershell
+deploy/cloudron/deploy.ps1 -Tag vX.Y.Z
+```
 
-Do not publish `docs/`, root governance files outside the intended public bundle, local logs, or private notes.
+The script:
 
-## Staging steps
+1. checks the tag is on `main`, has a published Release, and that its `public/VERSION` matches;
+2. takes a Cloudron backup;
+3. packs `public/` at the tag with `git archive` and uploads the single archive with `cloudron push`;
+4. unpacks it beside `/app/data/public`, stops if the live site has files the tag does not (rerun with `-AllowRemovals` once they are confirmed as unwanted), then swaps the folders;
+5. checks `https://www.apes.org.uk/VERSION` serves the tag's version, and swaps the previous folder back if not.
 
-1. Preview the shared PHP source site over HTTP and confirm representative routes render correctly.
-2. Run `powershell -ExecutionPolicy Bypass -File .\scripts\validate-public-site.ps1`.
-3. Run `powershell -ExecutionPolicy Bypass -File .\scripts\stage-cloudron-public.ps1`.
-4. Optionally run `powershell -ExecutionPolicy Bypass -File .\scripts\package-cloudron-public.ps1` if the deployment workflow prefers a ZIP upload.
-5. Back up the current Cloudron app before replacing any files.
-6. Upload the staged bundle contents to `/app/data/public`.
-7. Confirm `.htaccess`, `index.php`, `robots.txt`, `sitemap.xml`, `site.webmanifest`, `theme/`, `assets/`, `includes/`, and the branded error pages are present.
-8. Visit the homepage, Services hub, Donate page, Contact page, Change Log Hub, policy routes, one legacy news redirect, and one missing route.
+It prints the time each stage took. The previous site stays in `/app/data/public.previous` until the next deploy.
 
-## Production cutover
-
-1. Re-run `powershell -ExecutionPolicy Bypass -File .\scripts\validate-public-site.ps1`.
-2. Take a fresh Cloudron backup.
-3. Re-run `powershell -ExecutionPolicy Bypass -File .\scripts\stage-cloudron-public.ps1` if the public bundle changed after staging review.
-4. Rebuild `dist/cloudron-public.zip` with `powershell -ExecutionPolicy Bypass -File .\scripts\package-cloudron-public.ps1` if needed.
-5. Upload the approved bundle to production.
-6. Confirm the homepage, donate page, contact page, policy pages, Newsroom bridge, robots, sitemap and Change Log Hub load correctly.
-
-## Workflow notes
-
-- Keep the production runtime Apache + PHP + static assets only. No Node, Python, worker or background service runtime is required for this site.
-- The local PHP router exists only for preview parity. Production still relies on Cloudron Apache plus `public/.htaccess`.
-- If APES later wants automated Cloudron upload, keep deployment credentials out of the repository and use GitHub or environment secrets such as `CLOUDRON_FQDN`, `CLOUDRON_TOKEN`, and `CLOUDRON_APP_ID`.
+After the deploy, visit the homepage, Services hub, Donate page, Contact page, Change Log Hub, policy routes, one legacy news redirect and one missing route, or run `scripts\validate-public-site.ps1 -BaseUri https://www.apes.org.uk`.
 
 ## Rollback
 
-1. Restore the prior Cloudron backup or redeploy the previous public bundle.
-2. Re-check the homepage, donate page, contact page, change-log route, and policy routes.
-3. Announce rollback status internally before attempting another cutover.
+1. Swap back to the previous folder: `cloudron exec --app cfeb1a50-eb8d-4cfd-ac84-a0606c6051ec -- sh -c 'cd /app/data && mv public public.failed && mv public.previous public'`, or deploy the previous tag with `deploy.ps1 -Tag`.
+2. If that is not enough, restore the backup the deploy took.
+3. Re-check the homepage, donate page, contact page, change-log route and policy routes.

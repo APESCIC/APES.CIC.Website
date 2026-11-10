@@ -1,0 +1,88 @@
+name: Release
+
+# One release per milestone. Pushing the vX.Y.Z tag on the milestone's merge commit checks the tag
+# against VERSION and main, then publishes the GitHub Release titled from the milestone, with the
+# change log section as its notes. Deploying is a separate step: deploy/cloudron/deploy.ps1 -Tag vX.Y.Z.
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Publish the release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check the tag matches VERSION and is on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(tr -d '\r\n' < VERSION)"; version="${version#v}"
+          public_version="$(tr -d '\r\n' < public/VERSION)"; public_version="${public_version#v}"
+          if [[ "$GITHUB_REF_NAME" != "v$version" || "$version" != "$public_version" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION ($version) and public/VERSION ($public_version). Run php scripts/milestone-version bump in the milestone PR."
+            exit 1
+          fi
+          status="$(gh api "repos/$GITHUB_REPOSITORY/compare/$GITHUB_SHA...main" --jq '.status')"
+          if [[ "$status" != "ahead" && "$status" != "identical" ]]; then
+            echo "::error::Tag $GITHUB_REF_NAME ($GITHUB_SHA) is not on main ($status)."
+            exit 1
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Resolve the release title and notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          milestone_title="$(gh api "repos/$GITHUB_REPOSITORY/milestones?state=all&per_page=100" --paginate \
+            --jq '.[] | .title | select(startswith("v" + env.VERSION + " ") or startswith("v" + env.VERSION + ":"))' \
+            | head -n1 || true)"
+          name="${milestone_title#"v${VERSION}"}"
+          name="${name#:}"
+          if [[ "$name" == *:* ]]; then name="${name#*:}"; fi
+          name="$(sed -E 's/^[[:space:]]+|[[:space:]]+$//g' <<<"$name")"
+          echo "RELEASE_TITLE=v${VERSION}${name:+ $name}" >> "$GITHUB_ENV"
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[v?" v "\\]" { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > "$RUNNER_TEMP/notes.md"
+          echo "NOTES_LINES=$(grep -c . "$RUNNER_TEMP/notes.md" || true)" >> "$GITHUB_ENV"
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "Release $GITHUB_REF_NAME already exists; not changed."
+          elif [[ "${NOTES_LINES:-0}" -gt 0 ]]; then
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$RELEASE_TITLE" --notes-file "$RUNNER_TEMP/notes.md" --latest
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$RELEASE_TITLE" --generate-notes --latest
+          fi
+          {
+            echo "## Release $RELEASE_TITLE"
+            echo "- Deploy next: \`deploy/cloudron/deploy.ps1 -Tag $GITHUB_REF_NAME\`"
+          } >> "$GITHUB_STEP_SUMMARY"

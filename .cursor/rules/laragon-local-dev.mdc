@@ -1,0 +1,27 @@
+---
+description: Laragon is the only local set-up - run the live preview gate before any change
+alwaysApply: true
+---
+
+# Laragon local development
+
+Laragon is the only supported local set-up. This repository is its own Laragon project: Apache serves `public/`, PHP 8.4 (the NTS build, through FastCGI) runs any `.php` file, and Browsersync reloads the page on save. There is no database. Never suggest `php -S`, XAMPP, WAMP, containers, virtual machines or any other local server, and never use `file:///` as the preview.
+
+## Live preview gate (before any change)
+
+1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1`. It merges `origin/main` into the milestone branch (never rebases or pushes), runs `npm ci` when the lock file changed, checks Laragon and Apache are running, checks `http://apes-cic-website.test/VERSION` matches this checkout's `public/VERSION`, and starts Browsersync on port 3104.
+2. Exit 0: open `http://localhost:3104` (Browsersync, proxying `http://apes-cic-website.test`) in Cursor's browser, confirm the page loaded, then say "Preview ready, starting work". Exit 3: a decision is needed, ask with AskQuestion. Exit 1: a blocker, report it.
+3. If the site is missing, run `scripts\laragon-setup.ps1`. It links `C:\laragon\www\apes-cic-website` to this clone. Starting Laragon, clicking Reload, or switching its PHP version needs Bambie's click: ask with AskQuestion.
+
+## Commands
+
+| Task | Command |
+| --- | --- |
+| Set up or repair | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\laragon-setup.ps1` |
+| Live preview gate | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1` |
+| Browsersync live reload | `npm run dev` |
+| Version helper | `php scripts/milestone-version help` |
+
+- Put Laragon's PHP 8.4 NTS and Node 22 first on `PATH` for agent shells: `$env:Path = (Get-ChildItem C:\laragon\bin\php -Directory -Filter 'php-8.4.*-nts-*' | Sort-Object Name -Descending | Select-Object -First 1).FullName + ';C:\laragon\bin\nodejs\node-v22;' + $env:Path`.
+- `npm ci` may run without asking when `node_modules/` is missing. Ask before installing any system tool.
+- Profile values: `docs/laragon/profile.json` (read by the scripts) and `docs/laragon/profile.md`.

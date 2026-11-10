@@ -1,9 +1,9 @@
 ## Current release
 
-- Version: `v4.1.0b`
-- Release date: `2026-09-12`
-- Release impact: added a public thank-you page at `/messages/vol-stu-application-thank-you/` so people who finish the volunteer or student application can book an interview, and pointed the existing Sheltermanager completion URL to that page.
-- Operational note: preview the site with `scripts/preview-php-source-site.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and package only the `public/` bundle for Cloudron upload.
+- Version: `v4.1.1` (Beta is carried by the milestone title)
+- Release date: `2026-11-10`
+- Release impact: maintenance release. The footer now reads the deployed `public/VERSION`; the repository follows the APES standards (Laragon preview, versions from the milestone version, tagged releases and deploys, GitHub security checks).
+- Operational note: preview the site in Laragon with `scripts/preview.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and deploy a release tag with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`, which uploads only `public/`.
 
 <p align="center">
   <a href="https://www.apes.org.uk/" target="_blank" rel="noopener noreferrer">
@@ -170,12 +170,14 @@ The exact structure may vary by framework, but the repository should stay easy t
 This repository serves the production website from `public/` as a PHP-first site under Apache-compatible Cloudron hosting. Public routes render through one shared PHP source of truth and one shared theme asset layer.
 
 ```text
-dev/
-└── router.php           # Local PHP preview parity
+deploy/cloudron/
+└── deploy.ps1           # Deploy a release tag to Cloudron
 scripts/
 ├── ApesPhpTools.ps1
+├── check-site.php       # Site checks (also run by CI)
 ├── export-static-site.php
-├── preview-php-source-site.ps1
+├── laragon-setup.ps1    # Laragon project set-up
+├── preview.ps1          # Live preview gate
 ├── validate-public-site.ps1
 ├── stage-cloudron-public.ps1
 └── package-cloudron-public.ps1
@@ -201,15 +203,16 @@ git clone https://github.com/APESCIC/www.apes.org.uk.git
 cd www.apes.org.uk
 ```
 
-### 2. Preview the PHP source site locally
+### 2. Preview the site in Laragon
 
-If you prefer a terminal command, use:
+Laragon is the only supported local set-up. Its Apache serves `public/` with the same `.htaccess` rules as Cloudron, and PHP 8.4 runs through FastCGI.
 
-```bash
-powershell -ExecutionPolicy Bypass -File .\scripts\preview-php-source-site.ps1
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\laragon-setup.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\preview.ps1
 ```
 
-HTTP preview remains the preferred validation path because it matches the deployed `public/` web-root behavior. Do not rely on `file://` preview for acceptance checks.
+The first links `C:\laragon\www\apes-cic-website` to your clone so Laragon serves `http://apes-cic-website.test`. The second pulls the latest changes and starts Browsersync on `http://localhost:3104/`, which reloads on save. Do not rely on `file://` preview for acceptance checks. See `docs/laragon/profile.md`.
 
 ### 3. Optional static export for offline review or handoff
 
@@ -225,18 +228,24 @@ powershell -ExecutionPolicy Bypass -File .\scripts\export-static-site.ps1
 
 This export writes to `dist/static-export` by default and is not the canonical website source. Do not copy it back into `public/`.
 
-### 4. Run checks before staging or committing
+### 4. Run checks before committing
 
-```bash
-powershell -ExecutionPolicy Bypass -File .\scripts\validate-public-site.ps1
+```powershell
+php scripts/check-site.php
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\validate-public-site.ps1
 ```
 
-### 5. Stage or package the Cloudron public bundle
+`validate-public-site.ps1` checks routes, redirects, footers and error pages against `http://apes-cic-website.test`.
 
-```bash
-powershell -ExecutionPolicy Bypass -File .\scripts\stage-cloudron-public.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\package-cloudron-public.ps1
+### 5. Release and deploy
+
+Work ships once per milestone (see `CONTRIBUTING.md` and `.cursor/rules/version-shipping.mdc`). After the ship gate, the release tag is deployed with:
+
+```powershell
+deploy/cloudron/deploy.ps1 -Tag vX.Y.Z
 ```
+
+`stage-cloudron-public.ps1` and `package-cloudron-public.ps1` still build a `dist/` bundle for manual review.
 
 ---
 

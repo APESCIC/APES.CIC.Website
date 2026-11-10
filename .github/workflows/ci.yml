@@ -1,0 +1,50 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: PHP version (the runner's own PHP; only GitHub-owned actions are used)
+        run: php -v
+
+      - name: Site checks (VERSION, pages, sitemap, 404)
+        run: php scripts/check-site.php
+
+      - name: PHP lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < <(git ls-files -z -- '*.php' 'scripts/milestone-version')
+          for f in "${files[@]}"; do php -l "$f" >/dev/null || { php -l "$f"; exit 1; }; done
+          echo "Linted ${#files[@]} PHP files."
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: npm ci
+        run: npm ci --no-audit --no-fund
+
+      - name: ESLint
+        if: hashFiles('eslint.config.js') != ''
+        run: npx eslint .

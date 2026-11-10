@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * Milestone version helper: prints the next milestone's version, branch and PR title, checks titles and
+ * branch names, and sets the version fields once per milestone, as .cursor/rules/version-shipping.mdc says.
+ * Needs only PHP; no composer install.
+ *
+ * Run "php scripts/milestone-version help" for the commands.
+ */
+
+use Scripts\MilestoneVersion\Cli;
+use Scripts\MilestoneVersion\GitHubClient;
+
+require __DIR__.'/MilestoneVersion/SemVer.php';
+require __DIR__.'/MilestoneVersion/Milestones.php';
+require __DIR__.'/MilestoneVersion/TitleRules.php';
+require __DIR__.'/MilestoneVersion/BranchRules.php';
+require __DIR__.'/MilestoneVersion/GitHub.php';
+require __DIR__.'/MilestoneVersion/GitHubClient.php';
+require __DIR__.'/MilestoneVersion/VersionFields.php';
+require __DIR__.'/MilestoneVersion/Cli.php';
+
+$cli = new Cli(fn () => GitHubClient::fromEnvironment(dirname(__DIR__)), root: dirname(__DIR__));
+
+exit($cli->run(array_slice($argv, 1)));

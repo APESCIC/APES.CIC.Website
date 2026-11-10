@@ -23,11 +23,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
-        with:
-          php-version: '8.4'
-          coverage: none
-          tools: none
+      - name: PHP version (the runner's own PHP; only GitHub-owned actions are used)
+        run: php -v
 
       - name: Site checks (VERSION, pages, sitemap, 404)
         run: php scripts/check-site.php

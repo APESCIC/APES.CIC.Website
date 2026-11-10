@@ -35,6 +35,15 @@ Work ships once per milestone, by the milestone's version, never by GitHub's mil
 - **A milestone is done** only after the single merge, the release, a verified deploy (`https://www.apes.org.uk/VERSION` shows the tag) and close-out.
 - Hotfixes only with Bambie's AskQuestion approval, recorded on the issue (see the rule).
 
+### Milestone shipping
+
+1. Complete **all** the milestone's issues on its milestone branch.
+2. One merge into `main`: a merge commit, never a squash or rebase.
+3. One release: the `vX.Y.Z` tag on that merge commit and its GitHub Release.
+4. One deploy of that tag.
+
+Nothing reaches `main`, and nothing is tagged, released or deployed, before stage 2. A hotfix may skip these stages only with Bambie's written approval recorded on the issue.
+
 ## Issues
 
 - Assignee `apescic-director`. Every issue has a milestone; ask before creating one.

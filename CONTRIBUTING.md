@@ -17,6 +17,7 @@ Laragon is the only supported local set-up.
 - Names carry the milestone's version, never GitHub's milestone number. `php scripts/milestone-version next` prints the branch, PR title and Release title; CI checks the PR title and branch name.
 - The version is set once per milestone with `php scripts/milestone-version bump vX.Y.Z`, with the `## [X.Y.Z] - YYYY-MM-DD` change log entry, as the last commit.
 - The pull request merges once, as a merge commit, after Bambie's ship-gate answer. The tag `vX.Y.Z` publishes the Release, and that tag is deployed with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`.
+- A hotfix may skip these stages only with Bambie's written approval, recorded on the issue.
 
 ## Checks on every pull request
 

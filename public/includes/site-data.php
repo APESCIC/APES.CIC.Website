@@ -257,13 +257,13 @@ function apes_version(): string
         return $version;
     }
 
-    $versionFile = dirname(__DIR__, 2) . '/VERSION';
+    $versionFile = dirname(__DIR__) . '/VERSION';
 
     if (is_file($versionFile)) {
         $fileVersion = trim((string) file_get_contents($versionFile));
 
         if ($fileVersion !== '') {
-            $version = $fileVersion;
+            $version = 'v' . ltrim($fileVersion, 'v');
 
             return $version;
         }

@@ -1,8 +1,8 @@
 ## Current release
 
-- Version: `v4.1.0b`
-- Release date: `2026-09-12`
-- Release impact: added a public thank-you page at `/messages/vol-stu-application-thank-you/` so people who finish the volunteer or student application can book an interview, and pointed the existing Sheltermanager completion URL to that page.
+- Version: `v4.1.1` (Beta is carried by the milestone title)
+- Release date: `2026-11-10`
+- Release impact: maintenance release. The footer now reads the deployed `public/VERSION`; the repository follows the APES standards (Laragon preview, versions from the milestone version, tagged releases and deploys, GitHub security checks).
 - Operational note: preview the site in Laragon with `scripts/preview.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and deploy a release tag with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`, which uploads only `public/`.
 
 <p align="center">

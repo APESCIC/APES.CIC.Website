@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const APES_FALLBACK_VERSION = 'v4.1.0b';
+const APES_FALLBACK_VERSION = 'v4.1.1';
 const APES_SITE_NAME = 'Association of Protecting Exotic Species CIC';
 const APES_CIC_NUMBER = '16253848';
 const APES_CONTACT_EMAIL = 'info@apes.org.uk';
@@ -2865,9 +2865,9 @@ HTML,
                 'hero_summary' => 'Track every major release for this website, including updates, fixes, compliance changes, and user-facing improvements.',
                 'hero_actions' => [
                     ['label' => 'Expand all releases', 'href' => '#release-list', 'variant' => 'primary'],
-                    ['label' => 'View current release', 'href' => '#release-v410b', 'variant' => 'secondary'],
+                    ['label' => 'View current release', 'href' => '#release-v411', 'variant' => 'secondary'],
                 ],
-                'pills' => ['Current version ' . $siteVersion, 'Minor beta', 'Application thank you'],
+                'pills' => ['Current version ' . $siteVersion, 'Patch beta', 'Repository standards'],
                 'body_html' => <<<'HTML'
 <section class="section-shell">
   <div class="release-tools">
@@ -2895,7 +2895,46 @@ HTML,
 </section>
 
 <section class="section-shell" id="release-list">
-  <details class="release-card" data-release-card data-tags="current beta added public-facing" open id="release-v410b">
+  <details class="release-card" data-release-card data-tags="current beta changed internal-only" open id="release-v411">
+    <summary>
+      <span class="release-version">v4.1.1</span>
+      <span class="release-date">2026-11-10</span>
+    </summary>
+    <div class="release-body">
+      <div class="pill-row">
+        <span class="pill pill-version">Version v4.1.1</span>
+        <span class="pill pill-status">Beta</span>
+        <span class="pill pill-type">Changed</span>
+      </div>
+      <h3>Summary</h3>
+      <p>Maintenance release. The website looks and works as before; behind the scenes it now follows the APES repository standards for local preview, versioning, releases and security checks.</p>
+      <h3>Detailed changes</h3>
+      <ul class="clean-list">
+        <li>Footers on PHP-rendered pages now come from the deployed <code>public/VERSION</code>, shown as <code>v4.1.1</code>.</li>
+        <li>Each version is published from a version tag and deployed with a checked, reversible deploy script.</li>
+        <li>Every change is checked for valid pages, a valid sitemap and GitHub's dependency review and code scanning before release.</li>
+      </ul>
+      <h3>Affected areas</h3>
+      <ul class="clean-list">
+        <li>Website: www.apes.org.uk</li>
+        <li>Page or route: footer version on every page and the Change Log Hub</li>
+        <li>Public impact: none beyond the version label</li>
+        <li>Internal impact: Laragon preview, tagged releases and deploys, and free GitHub security checks (issue #28)</li>
+      </ul>
+      <h3>Version decision</h3>
+      <ul class="clean-list">
+        <li>Previous version: v4.1.0b</li>
+        <li>New version: v4.1.1 (Beta is carried by the milestone title)</li>
+        <li>Version type: patch beta</li>
+      </ul>
+      <h3>Validation</h3>
+      <ul class="clean-list">
+        <li>Checks run: site checks, PHP lint and CI on the milestone pull request; Laragon routes, redirects, 404 and 403 pages</li>
+        <li>Rollback notes: deploy the previous tag, or swap back to <code>/app/data/public.previous</code></li>
+      </ul>
+    </div>
+  </details>
+  <details class="release-card" data-release-card data-tags="beta added public-facing" id="release-v410b">
     <summary>
       <span class="release-version">v4.1.0b</span>
       <span class="release-date">2026-09-12</span>

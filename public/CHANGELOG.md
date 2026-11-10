@@ -1,3 +1,38 @@
+## [4.1.1] - 2026-11-10
+
+<span class="pill pill-version">Version v4.1.1</span>
+<span class="pill pill-status">Beta</span>
+<span class="pill pill-type">Changed</span>
+
+### Summary
+
+Maintenance release. The website looks and works as before; behind the scenes it now follows the APES repository standards for local preview, versioning, releases and security checks.
+
+### Detailed changes
+
+- Laragon is the only local set-up: `docs/laragon/`, `scripts/laragon-setup.ps1` and the live preview gate `scripts/preview.ps1`, with Browsersync live reload on port 3104. `dev/router.php`, `scripts/preview-php-source-site.ps1` and `tools/serve-public-static.ps1` are gone; `scripts/validate-public-site.ps1` checks the Laragon site.
+- `apes_version()` reads the deployed `public/VERSION` and shows it with a `v`; before, it read a root `VERSION` that Cloudron never had, so PHP-rendered footers came from `APES_FALLBACK_VERSION`. Pages served from the checked-in static snapshots (`DirectoryIndex index.html index.php`), including the home page and the Change Log Hub, still show `v4.0.1b`; a follow-up will decide whether to remove or regenerate them.
+- Versions come from the milestone version through `scripts/milestone-version`; `VERSION` is now plain semver (`4.1.1`).
+- Each version ships once: one tag, one Release (`release.yml`) and one deploy of that tag (`deploy/cloudron/deploy.ps1 -Tag`, with backup, swap, `/VERSION` check and rollback).
+- CI: site checks, PHP lint, PR title and branch checks, dependency review, CodeQL and Dependabot into the `dependencies` branch.
+
+### Affected areas
+
+- Website: www.apes.org.uk
+- Page or route: footer version on every page and the Change Log Hub
+- Public impact: none beyond the version label
+- Internal impact: issue #28
+
+### Version decision
+
+- Previous version: v4.1.0b
+- New version: v4.1.1 (Beta is carried by the milestone title)
+- Version type: patch beta
+
+### Validation
+
+- Checks run: `php scripts/check-site.php`, CI on the milestone pull request, and the Laragon routes, redirects, 404 and 403 pages.
+- Rollback notes: deploy the previous tag, or swap back to `/app/data/public.previous`.
 ## [v4.1.0b] - 2026-09-12
 
 <span class="pill pill-version">Version v4.1.0b</span>

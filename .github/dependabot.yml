@@ -1,0 +1,27 @@
+version: 2
+
+# Weekly grouped updates into the long-lived dependencies branch, never into main. They reach main in the
+# next milestone's single merge (see .cursor/rules/version-shipping.mdc).
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dependencies
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      github-actions:
+        patterns:
+          - '*'
+
+  - package-ecosystem: npm
+    directory: /
+    target-branch: dependencies
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      npm:
+        patterns:
+          - '*'

@@ -1,0 +1,44 @@
+name: milestone-version-check
+
+# PR titles and branch names must carry their milestone's version, never GitHub's milestone number.
+# See .cursor/rules/version-shipping.mdc.
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: milestone-version-check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: milestone-version-check
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out the script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts
+
+      - name: Check the PR title
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: php scripts/milestone-version check-title "$PR_TITLE" --pr "$PR_NUMBER"
+
+      - name: Check the branch name
+        if: ${{ !cancelled() }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: php scripts/milestone-version check-branch "$HEAD_REF"

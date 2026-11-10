@@ -1,13 +1,10 @@
 [CmdletBinding()]
 param(
-    [int] $Port = 8080,
-    [string] $BindHost = "127.0.0.1"
+    [string] $BaseUri = "http://apes-cic-website.test"
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
-
-. (Join-Path $PSScriptRoot "ApesPhpTools.ps1")
 
 function Invoke-ApesHttpRequest {
     [CmdletBinding()]
@@ -141,7 +138,6 @@ function Get-ApesTrackedRouteSnapshots {
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $publicRoot = (Resolve-Path (Join-Path $repoRoot "public")).Path
-$routerPath = (Resolve-Path (Join-Path $repoRoot "dev/router.php")).Path
 $rootVersionPath = Join-Path $repoRoot "VERSION"
 $publicVersionPath = Join-Path $publicRoot "VERSION"
 
@@ -165,7 +161,7 @@ $requiredFiles = @(
     "scripts/export-static-site.php",
     "scripts/ApesPhpTools.ps1",
     "scripts/export-static-site.ps1",
-    "scripts/preview-php-source-site.ps1",
+    "scripts/preview.ps1",
     "scripts/validate-public-site.ps1",
     "VERSION",
     "README.md",
@@ -242,11 +238,15 @@ foreach ($contentCheck in @(
     }
 }
 
-$phpPath = Get-ApesPhpPath
-$preview = Start-ApesPhpPreview -PhpPath $phpPath -DocumentRoot $publicRoot -RouterPath $routerPath -BindHost $BindHost -Port $Port -WorkingDirectory $repoRoot
+$baseUri = $BaseUri.TrimEnd("/")
 
 try {
-    $baseUri = $preview.BaseUri
+    Invoke-WebRequest -Uri "$baseUri/VERSION" -UseBasicParsing -TimeoutSec 10 | Out-Null
+} catch {
+    throw "$baseUri did not answer. Start Laragon and run scripts\laragon-setup.ps1 (see docs/laragon/profile.md)."
+}
+
+& {
     $responses = @{}
 
     $okRoutes = @(
@@ -279,7 +279,8 @@ try {
 
     $indexRedirect = Invoke-ApesHttpRequest -Uri ($baseUri + "/index") -NoRedirect
     Assert-ApesStatus -Response $indexRedirect -ExpectedStatusCode 301 -Label "/index"
-    if ($indexRedirect.Headers["Location"] -ne "/") {
+    $indexLocation = $indexRedirect.Headers["Location"] -replace "^$([regex]::Escape($baseUri))", ""
+    if ($indexLocation -ne "/") {
         throw "/index redirect target should be '/' but was '$($indexRedirect.Headers["Location"])'."
     }
 
@@ -317,7 +318,7 @@ try {
         Assert-ApesContains -Content $content -ExpectedText "Terms of Service" -Label "$footerRoute footer"
         Assert-ApesContains -Content $content -ExpectedText "Change Log Hub" -Label "$footerRoute footer"
         Assert-ApesContains -Content $content -ExpectedText "CIC No: 16253848" -Label "$footerRoute footer"
-        Assert-ApesContains -Content $content -ExpectedText "APES CIC $rootVersion" -Label "$footerRoute version"
+        Assert-ApesContains -Content $content -ExpectedText "APES CIC v$($rootVersion.TrimStart('v'))" -Label "$footerRoute version"
     }
 
     Assert-ApesContains -Content $responses["/search/"].Content -ExpectedText "Search the site to see results." -Label "/search/"
@@ -338,7 +339,8 @@ try {
 
     $completionRedirect = Invoke-ApesHttpRequest -Uri ($baseUri + "/messages/volunteer-student-placement-interview-booking-links?application=volunteer") -NoRedirect
     Assert-ApesStatus -Response $completionRedirect -ExpectedStatusCode 301 -Label "Sheltermanager completion redirect"
-    if ($completionRedirect.Headers["Location"] -ne "/messages/vol-stu-application-thank-you/?application=volunteer") {
+    $completionLocation = $completionRedirect.Headers["Location"] -replace "^$([regex]::Escape($baseUri))", ""
+    if ($completionLocation -ne "/messages/vol-stu-application-thank-you/?application=volunteer") {
         throw "Sheltermanager completion redirect target should be '/messages/vol-stu-application-thank-you/?application=volunteer' but was '$($completionRedirect.Headers["Location"])'."
     }
 
@@ -346,6 +348,4 @@ try {
     Write-Host "- Confirmed PHP-first public structure and version alignment"
     Write-Host "- Checked representative HTTP routes, redirects, forbidden paths, and fallback errors"
     Write-Host "- Confirmed shared theme asset endpoints, footer-required links, and search rendering"
-} finally {
-    Stop-ApesPreviewProcess -Process $preview.Process
 }

@@ -1,0 +1,14 @@
+{
+    "project": "apes-cic-website",
+    "site": "apes-cic-website.test",
+    "appUrl": "http://apes-cic-website.test",
+    "documentRoot": "public",
+    "php": "8.4",
+    "phpThreadSafe": false,
+    "apacheHandler": "fcgid",
+    "database": null,
+    "node": "22",
+    "devServer": "browsersync",
+    "devServerPort": 3104,
+    "devServerUiPort": 3114
+}

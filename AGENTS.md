@@ -87,7 +87,7 @@ Shipping follows Cursor's `github-milestone-completion` and `ship-gate` skills; 
 - 2026-11-14: Laravel Herd Pro is the local development stack (Bambie, [#34](https://github.com/APESCIC/APES.CIC.Website/issues/34)). `public/.htaccess` stays the single source of the rules, applied locally by `LocalValetDriver.php`.
 - Herd hands static files to nginx directly, so the `X-Content-Type-Options` and `Referrer-Policy` headers only appear on PHP responses locally. Cloudron's Apache sends them on every response.
 - Checked-in static snapshots (`public/index.html`, `public/<route>/index.html`) are served ahead of the PHP pages, by Apache's `DirectoryIndex index.html index.php` and the same way by Herd ([#32](https://github.com/APESCIC/APES.CIC.Website/issues/32)). Until they go, `validate-public-site.ps1` stops at its snapshot checks.
-- `scripts/milestone-version next` still prints per-issue "Issue branch" and "PR title" lines; ignore them, as all work goes on the milestone branch.
+- `scripts/milestone-version next` still prints per-issue "Issue branch" and "PR title" lines; ignore them, as all work goes on the milestone branch ([#36](https://github.com/APESCIC/APES.CIC.Website/issues/36)).
 
 ## Where to find things
 

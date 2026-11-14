@@ -10,7 +10,7 @@
 ## Source-of-truth rendering workflow
 
 - Shared PHP under `public/index.php` and `public/includes/` is the canonical source of truth.
-- Local preview runs in Laragon (`http://apes-cic-website.test`), whose Apache applies the same `public/.htaccess` rules as Cloudron. See `docs/laragon/profile.md`.
+- Local preview runs in Laravel Herd (`http://apes-cic-website.test`). Herd uses nginx, so the root `LocalValetDriver.php` applies the `public/.htaccess` redirects and forbidden paths locally; Cloudron's Apache reads the same file directly. See `docs/herd/profile.md`.
 - Optional static snapshots: `powershell -ExecutionPolicy Bypass -File .\scripts\export-static-site.ps1` writes `dist/static-export`, which is never copied back into `public/` or deployed.
 
 Do not publish `docs/`, root governance files, local logs or private notes. Only `public/` is deployed.

@@ -1,7 +1,7 @@
 {
     "name": "apes-cic-website",
     "private": true,
-    "description": "APES CIC Website - Laragon live reload and checks",
+    "description": "APES CIC Website - Laravel Herd live reload and checks",
     "scripts": {
         "dev": "browser-sync start --proxy http://apes-cic-website.test --port 3104 --ui-port 3114 --files \"public/**/*\" --no-open --no-notify",
         "check": "php scripts/check-site.php"

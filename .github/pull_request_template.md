@@ -15,7 +15,7 @@ Closes #
 ## Checks
 
 - [ ] `php scripts/check-site.php` passes
-- [ ] Changed pages checked in the Laragon preview (`scripts\preview.ps1`), desktop and mobile
+- [ ] Changed pages checked in the Laravel Herd preview (`scripts\preview.ps1`), desktop and mobile
 - [ ] SEO, sitemap, footer and error pages updated where pages changed
 - [ ] `php scripts/milestone-version bump vX.Y.Z` and the change log entry are the last commit (`chore: release vX.Y.Z`)
 - [ ] No secrets, credentials or personal data

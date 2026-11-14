@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const APES_FALLBACK_VERSION = 'v4.1.1';
+const APES_FALLBACK_VERSION = 'v4.1.2';
 const APES_SITE_NAME = 'Association of Protecting Exotic Species CIC';
 const APES_CIC_NUMBER = '16253848';
 const APES_CONTACT_EMAIL = 'info@apes.org.uk';
@@ -2895,7 +2895,45 @@ HTML,
 </section>
 
 <section class="section-shell" id="release-list">
-  <details class="release-card" data-release-card data-tags="current beta changed internal-only" open id="release-v411">
+  <details class="release-card" data-release-card data-tags="current changed internal-only" open id="release-v412">
+    <summary>
+      <span class="release-version">v4.1.2</span>
+      <span class="release-date">2026-11-14</span>
+    </summary>
+    <div class="release-body">
+      <div class="pill-row">
+        <span class="pill pill-version">Version v4.1.2</span>
+        <span class="pill pill-status">Dev</span>
+        <span class="pill pill-type">Changed</span>
+      </div>
+      <h3>Summary</h3>
+      <p>Maintenance release. The website looks and works as before; behind the scenes, local development and testing now run on Laravel Herd.</p>
+      <h3>Detailed changes</h3>
+      <ul class="clean-list">
+        <li>Local previews run on Laravel Herd with PHP 8.4, the same version as the live site.</li>
+        <li>The website's redirects and protected folders are checked locally from the same rules the live site uses.</li>
+      </ul>
+      <h3>Affected areas</h3>
+      <ul class="clean-list">
+        <li>Website: www.apes.org.uk</li>
+        <li>Page or route: footer version only</li>
+        <li>Public impact: none beyond the version label</li>
+        <li>Internal impact: Laravel Herd local development (issue #34)</li>
+      </ul>
+      <h3>Version decision</h3>
+      <ul class="clean-list">
+        <li>Previous version: v4.1.1</li>
+        <li>New version: v4.1.2 (Dev is carried by the milestone title)</li>
+        <li>Version type: patch</li>
+      </ul>
+      <h3>Validation</h3>
+      <ul class="clean-list">
+        <li>Checks run: site checks, PHP lint and CI on the milestone pull request; Herd routes, redirects, 404 and 403 pages</li>
+        <li>Rollback notes: deploy the previous tag, or swap back to <code>/app/data/public.previous</code></li>
+      </ul>
+    </div>
+  </details>
+  <details class="release-card" data-release-card data-tags="beta changed internal-only" id="release-v411">
     <summary>
       <span class="release-version">v4.1.1</span>
       <span class="release-date">2026-11-10</span>

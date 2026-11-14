@@ -243,7 +243,7 @@ $baseUri = $BaseUri.TrimEnd("/")
 try {
     Invoke-WebRequest -Uri "$baseUri/VERSION" -UseBasicParsing -TimeoutSec 10 | Out-Null
 } catch {
-    throw "$baseUri did not answer. Start Laragon and run scripts\laragon-setup.ps1 (see docs/laragon/profile.md)."
+    throw "$baseUri did not answer. Start Laravel Herd and run scripts\herd-setup.ps1 (see docs/herd/profile.md)."
 }
 
 & {

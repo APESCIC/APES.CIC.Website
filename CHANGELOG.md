@@ -2,6 +2,40 @@
 
 Track every major release for this website, including updates, fixes, compliance changes, and user-facing improvements.
 
+## [4.1.2] - 2026-11-14
+
+<span class="pill pill-version">Version v4.1.2</span>
+<span class="pill pill-status">Dev</span>
+<span class="pill pill-type">Changed</span>
+
+### Summary
+
+Maintenance release. The website looks and works as before; local development and testing now run on Laravel Herd.
+
+### Detailed changes
+
+- Laravel Herd is the local set-up: the repo is linked in Herd as `apes-cic-website` (`http://apes-cic-website.test`), isolated to PHP 8.4 like Cloudron, with Browsersync live reload on port 3104. `scripts/herd-setup.ps1` and `docs/herd/` replace the old set-up script and profile, and `scripts/preview.ps1` checks Herd.
+- `LocalValetDriver.php` (repo root, never deployed) applies the `public/.htaccess` redirects and forbidden paths under Herd's nginx, so `public/.htaccess` stays the only place those rules live.
+- `AGENTS.md`, `CONTRIBUTING.md`, the README, the Cursor rules and skills, the PR template and the VS Code tasks describe the Herd set-up.
+
+### Affected areas
+
+- Website: www.apes.org.uk
+- Page or route: footer version only
+- Public impact: none beyond the version label
+- Internal impact: issue #34
+
+### Version decision
+
+- Previous version: v4.1.1
+- New version: v4.1.2 (Dev is carried by the milestone title)
+- Version type: patch
+
+### Validation
+
+- Checks run: `php scripts/check-site.php`, PHP lint, CI on the milestone pull request, and the Herd routes, redirects, 404 and 403 pages through `scripts/validate-public-site.ps1` (its static-snapshot checks wait on issue #32).
+- Rollback notes: deploy the previous tag, or swap back to `/app/data/public.previous`.
+
 ## [4.1.1] - 2026-11-10
 
 <span class="pill pill-version">Version v4.1.1</span>

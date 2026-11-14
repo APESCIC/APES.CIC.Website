@@ -27,13 +27,7 @@ function Get-ApesPhpPath {
         }
     }
 
-    $laragonPhp = Get-ChildItem -LiteralPath "C:\laragon\bin\php" -Directory -ErrorAction SilentlyContinue |
-        Where-Object { $_.Name -match '^php-8\.4\.\d+(-\d+)?-nts-Win32' } |
-        Sort-Object Name -Descending |
-        Select-Object -First 1
-    if ($null -ne $laragonPhp) {
-        $candidates.Add((Join-Path $laragonPhp.FullName "php.exe"))
-    }
+    $candidates.Add((Join-Path $env:USERPROFILE ".config\herd\bin\php84\php.exe"))
 
     foreach ($candidate in $candidates | Select-Object -Unique) {
         if (Test-Path -LiteralPath $candidate -PathType Leaf) {
@@ -41,5 +35,5 @@ function Get-ApesPhpPath {
         }
     }
 
-    throw "Unable to locate php.exe. Add PHP to PATH, set APES_PHP, or install Laragon's PHP 8.4 (see docs/laragon/profile.md)."
+    throw "Unable to locate php.exe. Add PHP to PATH, set APES_PHP, or install Laravel Herd's PHP 8.4 (see docs/herd/profile.md)."
 }

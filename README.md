@@ -1,9 +1,9 @@
 ## Current release
 
-- Version: `v4.1.1` (Beta is carried by the milestone title)
-- Release date: `2026-11-10`
-- Release impact: maintenance release. The footer now reads the deployed `public/VERSION`; the repository follows the APES standards (Laragon preview, versions from the milestone version, tagged releases and deploys, GitHub security checks).
-- Operational note: preview the site in Laragon with `scripts/preview.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and deploy a release tag with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`, which uploads only `public/`.
+- Version: `v4.1.2` (Dev is carried by the milestone title)
+- Release date: `2026-11-14`
+- Release impact: maintenance release. Local development and testing run on Laravel Herd (PHP 8.4, as on Cloudron), with `LocalValetDriver.php` applying the `public/.htaccess` rules locally; the public site is unchanged apart from the version label.
+- Operational note: preview the site in Laravel Herd with `scripts/preview.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and deploy a release tag with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`, which uploads only `public/`.
 
 <p align="center">
   <a href="https://www.apes.org.uk/" target="_blank" rel="noopener noreferrer">
@@ -170,13 +170,14 @@ The exact structure may vary by framework, but the repository should stay easy t
 This repository serves the production website from `public/` as a PHP-first site under Apache-compatible Cloudron hosting. Public routes render through one shared PHP source of truth and one shared theme asset layer.
 
 ```text
+LocalValetDriver.php     # Applies public/.htaccess under Laravel Herd (local only, never deployed)
 deploy/cloudron/
 └── deploy.ps1           # Deploy a release tag to Cloudron
 scripts/
 ├── ApesPhpTools.ps1
 ├── check-site.php       # Site checks (also run by CI)
 ├── export-static-site.php
-├── laragon-setup.ps1    # Laragon project set-up
+├── herd-setup.ps1       # Laravel Herd site set-up
 ├── preview.ps1          # Live preview gate
 ├── validate-public-site.ps1
 ├── stage-cloudron-public.ps1
@@ -199,20 +200,20 @@ public/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/APESCIC/www.apes.org.uk.git
-cd www.apes.org.uk
+git clone https://github.com/APESCIC/APES.CIC.Website.git
+cd APES.CIC.Website
 ```
 
-### 2. Preview the site in Laragon
+### 2. Preview the site in Laravel Herd
 
-Laragon is the only supported local set-up. Its Apache serves `public/` with the same `.htaccess` rules as Cloudron, and PHP 8.4 runs through FastCGI.
+Laravel Herd is the supported local set-up. Its nginx serves `public/` on PHP 8.4, the same version as Cloudron, and the root `LocalValetDriver.php` applies the `public/.htaccess` redirects and forbidden paths, which nginx would otherwise ignore.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\laragon-setup.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\herd-setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\preview.ps1
 ```
 
-The first links `C:\laragon\www\apes-cic-website` to your clone so Laragon serves `http://apes-cic-website.test`. The second pulls the latest changes and starts Browsersync on `http://localhost:3104/`, which reloads on save. Do not rely on `file://` preview for acceptance checks. See `docs/laragon/profile.md`.
+The first links your clone in Herd as `apes-cic-website` and isolates it to PHP 8.4, so Herd serves `http://apes-cic-website.test`. The second pulls the latest changes and starts Browsersync on `http://localhost:3104/`, which reloads on save. Do not rely on `file://` preview for acceptance checks. See `docs/herd/profile.md`.
 
 ### 3. Optional static export for offline review or handoff
 

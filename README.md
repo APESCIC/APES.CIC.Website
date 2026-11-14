@@ -170,13 +170,14 @@ The exact structure may vary by framework, but the repository should stay easy t
 This repository serves the production website from `public/` as a PHP-first site under Apache-compatible Cloudron hosting. Public routes render through one shared PHP source of truth and one shared theme asset layer.
 
 ```text
+LocalValetDriver.php     # Applies public/.htaccess under Laravel Herd (local only, never deployed)
 deploy/cloudron/
 └── deploy.ps1           # Deploy a release tag to Cloudron
 scripts/
 ├── ApesPhpTools.ps1
 ├── check-site.php       # Site checks (also run by CI)
 ├── export-static-site.php
-├── laragon-setup.ps1    # Laragon project set-up
+├── herd-setup.ps1       # Laravel Herd site set-up
 ├── preview.ps1          # Live preview gate
 ├── validate-public-site.ps1
 ├── stage-cloudron-public.ps1
@@ -199,20 +200,20 @@ public/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/APESCIC/www.apes.org.uk.git
-cd www.apes.org.uk
+git clone https://github.com/APESCIC/APES.CIC.Website.git
+cd APES.CIC.Website
 ```
 
-### 2. Preview the site in Laragon
+### 2. Preview the site in Laravel Herd
 
-Laragon is the only supported local set-up. Its Apache serves `public/` with the same `.htaccess` rules as Cloudron, and PHP 8.4 runs through FastCGI.
+Laravel Herd is the supported local set-up. Its nginx serves `public/` on PHP 8.4, the same version as Cloudron, and the root `LocalValetDriver.php` applies the `public/.htaccess` redirects and forbidden paths, which nginx would otherwise ignore.
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\laragon-setup.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\herd-setup.ps1
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\preview.ps1
 ```
 
-The first links `C:\laragon\www\apes-cic-website` to your clone so Laragon serves `http://apes-cic-website.test`. The second pulls the latest changes and starts Browsersync on `http://localhost:3104/`, which reloads on save. Do not rely on `file://` preview for acceptance checks. See `docs/laragon/profile.md`.
+The first links your clone in Herd as `apes-cic-website` and isolates it to PHP 8.4, so Herd serves `http://apes-cic-website.test`. The second pulls the latest changes and starts Browsersync on `http://localhost:3104/`, which reloads on save. Do not rely on `file://` preview for acceptance checks. See `docs/herd/profile.md`.
 
 ### 3. Optional static export for offline review or handoff
 

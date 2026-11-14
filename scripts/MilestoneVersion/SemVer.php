@@ -32,7 +32,7 @@ final class SemVer
     }
 
     /**
-     * Reads the version from the start of a milestone title, e.g. "v0.58.3 Dev: Laragon local development".
+     * Reads the version from the start of a milestone title, e.g. "v4.1.2 Dev: Laravel Herd local development".
      */
     public static function fromMilestoneTitle(string $title): ?self
     {

@@ -2,7 +2,7 @@
     "version":  "2.0.0",
     "tasks":  [
                   {
-                      "label":  "APES: Laragon live preview",
+                      "label":  "APES: Herd live preview",
                       "type":  "shell",
                       "command":  "powershell",
                       "args":  [
@@ -25,7 +25,7 @@
                                        }
                   },
                   {
-                      "label":  "APES: Validate the Laragon site",
+                      "label":  "APES: Validate the Herd site",
                       "type":  "shell",
                       "command":  "powershell",
                       "args":  [

@@ -1,12 +1,12 @@
 # Contributing to APES CIC Website
 
-Thank you for helping. This page is the short version; the rules agents and people follow are in [`AGENTS.md`](AGENTS.md), [`.cursor/rules/version-shipping.mdc`](.cursor/rules/version-shipping.mdc) and [`.cursor/rules/laragon-local-dev.mdc`](.cursor/rules/laragon-local-dev.mdc).
+Thank you for helping. This page is the short version; the rules agents and people follow are in [`AGENTS.md`](AGENTS.md), [`.cursor/rules/version-shipping.mdc`](.cursor/rules/version-shipping.mdc) and [`.cursor/rules/herd-local-dev.mdc`](.cursor/rules/herd-local-dev.mdc).
 
 ## Local preview
 
-Laragon is the only supported local set-up.
+Laravel Herd is the supported local set-up.
 
-1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\laragon-setup.ps1` once. It links `C:\laragon\www\apes-cic-website` to your clone so Laragon serves `http://apes-cic-website.test` from `public/`.
+1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\herd-setup.ps1` once. It links your clone in Herd as `apes-cic-website` on PHP 8.4, so Herd serves `http://apes-cic-website.test` from `public/`. The root `LocalValetDriver.php` applies the `public/.htaccess` redirects and forbidden paths, which Herd's nginx would otherwise ignore.
 2. Before each change, run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1`. It pulls the latest changes and starts Browsersync on `http://localhost:3104`, which reloads the page when you save.
 3. Check every page you change on desktop and mobile, and run `php scripts/check-site.php`.
 

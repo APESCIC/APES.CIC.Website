@@ -9,7 +9,7 @@ Follows `.cursor/rules/version-shipping.mdc`. Run it from one plan; when a new c
 
 ## Steps
 
-1. **Live preview gate** (`.cursor/rules/laragon-local-dev.mdc`): `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1`, then open the printed URL in Cursor's browser, confirm it loaded and say "Preview ready, starting work". Exit 3 means a decision: ask with AskQuestion. Exit 1 means a blocker: report it.
+1. **Live preview gate** (`.cursor/rules/herd-local-dev.mdc`): `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1`, then open the printed URL in Cursor's browser, confirm it loaded and say "Preview ready, starting work". Exit 3 means a decision: ask with AskQuestion. Exit 1 means a blocker: report it.
 2. **Find the version.** `php scripts/milestone-version next`. Stop and report, without guessing, if it fails, prints a warning about a milestone you were asked to work on, or names a different milestone than the user asked for.
 3. **Branch.** Use the printed milestone branch. Create it from `origin/main` if it is missing (`git switch -c <branch> origin/main`, `git push -u origin HEAD`), otherwise switch to it and merge `origin/main`. Merge `origin/dependencies` with a merge commit. Stop on any conflict. Call `SetActiveBranch`.
 4. **Issues.** List the milestone's issues (`gh issue list --milestone "<title>" --state open`). Post the Started comment on each (`Add-IssueUpdate.ps1`).

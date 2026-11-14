@@ -1,0 +1,28 @@
+---
+description: Laravel Herd is the local set-up - run the live preview gate before any change
+alwaysApply: true
+---
+
+# Laravel Herd local development
+
+Laravel Herd is the supported local set-up; the steps of the preview gate are Cursor's `live-preview-gate` and `herd-local-preview` skills. This file fills their slots for this repository. Herd's nginx serves `public/`, PHP 8.4 (isolated to this site, as on Cloudron) runs any `.php` file, the root `LocalValetDriver.php` applies `public/.htaccess`, and Browsersync reloads the page on save. There is no database. Never use `file:///` as the preview.
+
+## Live preview gate (before any change)
+
+1. Run `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1`. It merges `origin/main` into the milestone branch (never rebases or pushes), runs `npm ci` when the lock file changed, checks Herd is running and the site is linked to this clone on PHP 8.4, checks `http://apes-cic-website.test/VERSION` matches this checkout's `public/VERSION`, and starts Browsersync on port 3104.
+2. Exit 0: open `http://localhost:3104` (Browsersync, proxying `http://apes-cic-website.test`) in Cursor's browser, confirm the page loaded, then say "Preview ready, starting work". Exit 3: a decision is needed, ask with AskQuestion. Exit 1: a blocker, report it.
+3. If the site is missing or on the wrong PHP, run `scripts\herd-setup.ps1`. It links the repo in Herd as `apes-cic-website` and isolates it to PHP 8.4. Starting the Herd app needs Bambie's click: ask with AskQuestion.
+
+## Commands
+
+| Task | Command |
+| --- | --- |
+| Set up or repair | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\herd-setup.ps1` |
+| Live preview gate | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\preview.ps1` |
+| Browsersync live reload | `npm run dev` |
+| Site info (URL, PHP, path) | `herd site:info --json` |
+| Version helper | `herd php scripts/milestone-version help` |
+
+- Put Herd and its Node 22 first on `PATH` for agent shells: `$env:Path = "$env:USERPROFILE\.config\herd\bin;" + (Get-ChildItem "$env:USERPROFILE\.config\herd\bin\nvm" -Directory -Filter 'v22.*' | Sort-Object { [version]$_.Name.TrimStart('v') } -Descending | Select-Object -First 1).FullName + ";$env:Path"`. Use `herd php` so commands run on the site's PHP 8.4.
+- `npm ci` may run without asking when `node_modules/` is missing. Ask before installing any system tool (`herd php:install`, `herd node:install`).
+- Profile values: `docs/herd/profile.json` (read by the scripts) and `docs/herd/profile.md`.

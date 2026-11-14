@@ -1,69 +1,100 @@
 # Agent instructions for APES CIC Website
 
-APES CIC Website (`https://www.apes.org.uk`) is maintained by the Association of Protecting Exotic Species CIC (APES CIC). It is a PHP-first website served from `public/`: `public/index.php` renders the pages from shared PHP includes, and `.htaccess` routes clean URLs. The owner is Bambie Murphy, Director. Write UK English (organisation, behaviour, colour, licence) in the site, docs, issues and pull requests.
+Cursor's user rules and skills set how work is done here (branches, issues, pull requests, merge, release, deploy, ship gate, decisions and safety). This file describes this repository and fills the named slots below. If anything here disagrees with them, Cursor's rules win and this file is corrected in the same milestone.
 
-This file is the source of truth for agents. How work ships is in [`.cursor/rules/version-shipping.mdc`](.cursor/rules/version-shipping.mdc) and local development in [`.cursor/rules/laragon-local-dev.mdc`](.cursor/rules/laragon-local-dev.mdc); this file points to them rather than repeating them.
+The owner is Bambie Murphy, Director. Write UK English (organisation, behaviour, colour, licence) in the site, docs, issues and pull requests. Never print, paste or commit passwords, secrets, tokens, keys, `.env` values or Cloudron credentials (including the app's `/app/data/credentials.txt`).
 
-## Ground rules
+## About the app
 
-- Never print, paste or commit passwords, secrets, tokens, keys, `.env` values or Cloudron credentials (including the app's `/app/data/credentials.txt`).
-- Ask Bambie for every decision with AskQuestion: the best option first, ending in `(Recommended)`, with the reason in one line; a safe `Stop here` last; and the prompt ending "Or choose Other to type your own." Don't ask again about something a rule, the confirmed plan or an earlier answer settles.
-- Work only in `APESCIC/APES.CIC.Website`.
-- Every Cloudron app is production. Read-only commands (status, logs) run freely. A deploy needs the ship-gate answer in the current chat. Any other change needs an AskQuestion answer with `Back up, then <change> (Recommended)` first. Don't change DNS or Cloudflare.
+APES CIC Website (`https://www.apes.org.uk`) is the public website of the Association of Protecting Exotic Species CIC (APES CIC): rescue, rehoming, services, donations, policies and the Change Log Hub, with news handed off to APES Newsroom.
+
+- Repository: `APESCIC/APES.CIC.Website`. Work only in this repository.
+- Every Cloudron app is production. Read-only commands (status, logs) run freely; anything else follows Cursor's `cloudron-ops` and `cloudron-deploy` skills. Don't change DNS or Cloudflare.
 - Security checks use GitHub's free features only: Dependabot (into the `dependencies` branch), dependency review and CodeQL. Don't add paid or third-party scanners.
 
-## Local development (Laragon)
+## Stack and architecture
 
-Laragon is the only supported local set-up; never suggest `php -S`, XAMPP, WAMP, containers or virtual machines. Run the live preview gate before any change: `scripts\preview.ps1`, then open the preview in Cursor's browser and say "Preview ready, starting work". Full steps: [`laragon-local-dev.mdc`](.cursor/rules/laragon-local-dev.mdc).
+- PHP-first website served from `public/` (PHP 8.4 on Cloudron). No database, no Composer packages; Node is used locally for Browsersync only.
+- `public/index.php` renders every route from `public/includes/site-data.php` through `render-page.php`; `apes_version()` reads `VERSION` for the footer.
+- `public/.htaccess` holds the clean-URL fallback, the 301 redirects, the forbidden paths and the error documents. It is the only place those rules live: Cloudron's Apache applies it, and locally `LocalValetDriver.php` applies it under Herd.
+- `scripts\export-static-site.ps1` writes optional static snapshots to `dist/static-export` (never deployed).
+
+## Local development and preview
+
+Run the live preview gate before any change: `scripts\preview.ps1`, then open the preview in Cursor's browser and say "Preview ready, starting work". Repo steps: [`herd-local-dev.mdc`](.cursor/rules/herd-local-dev.mdc); profile: [docs/herd/profile.md](docs/herd/profile.md).
 
 | Item | Value |
 | --- | --- |
-| Site | `http://apes-cic-website.test`, served by Laragon's Apache from `public/` through the junction `C:\laragon\www\apes-cic-website` |
-| Live reload | `npm run dev`: Browsersync on `http://localhost:3104` |
-| PHP | Laragon's PHP 8.4 NTS through FastCGI, as on Cloudron (8.4). Only `.php` files use it |
+| Clone | `C:\Users\BambieMurphy\Documents\GitHub\APES.CIC.Website` |
+| Herd site | `apes-cic-website` (linked; PHP 8.4 isolated, as on Cloudron) |
+| Preview URL | `http://apes-cic-website.test` (not secured; Browsersync proxies it) |
+| Preview command | `scripts\preview.ps1` (starts `npm run dev`) |
+| Live reload | Browsersync on `http://localhost:3104` (UI 3114), no Vite |
+| Set up or repair | `scripts\herd-setup.ps1` |
+| Env file | None |
 | Database | None, so there is no demo seeder |
-| Set up or repair | `scripts\laragon-setup.ps1` |
-| Site checks | `php scripts/check-site.php` (also run by CI) |
-| Profile | [docs/laragon/profile.md](docs/laragon/profile.md) |
+| Mail | None (the site sends no mail) |
 
-## Shipping and versioning
+- Herd's nginx ignores `.htaccess`. The root `LocalValetDriver.php` reads `public/.htaccess` on every request and applies its `[F]` and `[R=301]` rules, so the local redirects and 403s match Cloudron. It is outside `public/` and never deployed.
+- Node: Herd's nvm has Node 22 (`%USERPROFILE%\.config\herd\bin\nvm\v22.*`), which the scripts put first on `PATH`; CI also uses Node 22. Herd's active Node may be newer.
 
-Work ships once per milestone, by the milestone's version, never by GitHub's milestone number: one `milestone/vX-Y-Z-<slug>` branch, one draft PR into `main`, one merge commit, one `vX.Y.Z` tag and Release, one deploy of that tag. The rule is [`version-shipping.mdc`](.cursor/rules/version-shipping.mdc); the skills are [`complete-next-version`](.cursor/skills/complete-next-version/SKILL.md) and [`release-version`](.cursor/skills/release-version/SKILL.md); the command is `/complete-next-version`.
+### Local development with Laravel Herd
 
-- `php scripts/milestone-version next` prints the next milestone, its branch, PR title and Release title. `bump vX.Y.Z` sets `VERSION`, `public/VERSION` and every footer that repeats the version, once per milestone.
-- **An issue is done** when its acceptance criteria are met and committed on the milestone branch. Post the Committed comment and leave it open; it closes when the milestone PR merges.
-- **A milestone is done** only after the single merge, the release, a verified deploy (`https://www.apes.org.uk/VERSION` shows the tag) and close-out.
-- Hotfixes only with Bambie's AskQuestion approval, recorded on the issue (see the rule).
+This project runs on Laravel Herd. Run `herd site:info` for the URL, PHP version and connected services.
 
-### Milestone shipping
+- Use `herd php` so commands use this site's PHP version.
+- Use `herd status` if something doesn't respond; `herd list` shows every command (`--json` for structured output).
 
-1. Complete **all** the milestone's issues on its milestone branch.
-2. One merge into `main`: a merge commit, never a squash or rebase.
-3. One release: the `vX.Y.Z` tag on that merge commit and its GitHub Release.
-4. One deploy of that tag.
+## Tests and checks
 
-Nothing reaches `main`, and nothing is tagged, released or deployed, before stage 2. A hotfix may skip these stages only with Bambie's written approval recorded on the issue.
+| Check | Command |
+| --- | --- |
+| Site checks (VERSION, pages, sitemap, 404) | `herd php scripts/check-site.php` (also run by CI) |
+| Routes, redirects, 403, 404 and footer against Herd | `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\validate-public-site.ps1` |
+| PHP lint | `herd php -l <file>` (CI lints every tracked `.php` file) |
+| CI workflows | `.github/workflows/ci.yml` (`ci`), `milestone-version-check`, `dependency-review`, CodeQL |
 
-## Issues
+## Workflow slots
 
-- Assignee `apescic-director`. Every issue has a milestone; ask before creating one.
-- Title `[Type] Short title`, where the type is `Epic`, `Story`, `Task`, `Bug`, `Chore` or `Spike`.
-- Post progress with the `github-closeout` scripts (`Add-IssueUpdate.ps1`): Started, Decision, Blocked, Split and Committed.
+Shipping follows Cursor's `github-milestone-completion` and `ship-gate` skills; the repo's version rules are in [`version-shipping.mdc`](.cursor/rules/version-shipping.mdc), with the [`complete-next-version`](.cursor/skills/complete-next-version/SKILL.md) and [`release-version`](.cursor/skills/release-version/SKILL.md) skills and the `/complete-next-version` command.
 
-## Hosting
+| Slot | Value |
+| --- | --- |
+| Milestone branch pattern | `milestone/vX-Y-Z-<slug>`, printed by `herd php scripts/milestone-version next` (CI checks it) |
+| PR and Release titles | `v<version>: <milestone name>` and `v<version> <milestone name>`, printed by the same command |
+| Version files | `VERSION`, `public/VERSION` and the fields in `scripts/MilestoneVersion/fields.json`, set once by `herd php scripts/milestone-version bump vX.Y.Z` |
+| Release records | `## [X.Y.Z] - YYYY-MM-DD` in `CHANGELOG.md`, `public/CHANGELOG.md` and the Change Log Hub (`public/includes/site-data.php`) |
+| Release tooling | Pushing the `vX.Y.Z` tag runs `release.yml`, which publishes the GitHub Release |
+| Area labels | None |
+| Issue title prefix | `[Type] Short title`, assignee `apescic-director` |
+
+## Deploy and health
 
 | Item | Value |
 | --- | --- |
-| App | Cloudron LAMP app `cfeb1a50-eb8d-4cfd-ac84-a0606c6051ec` |
+| Target | Cloudron LAMP app |
+| Cloudron app ID | `cfeb1a50-eb8d-4cfd-ac84-a0606c6051ec` |
 | Domain | `https://www.apes.org.uk` |
 | Web root | `/app/data/public` (PHP 8.4, set by `/app/data/PHP_VERSION`) |
-| Deploy | `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`: backup, upload the tag's `public/`, swap, check `/VERSION`, roll back on failure |
+| Deploy command | `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`: backup, upload the tag's `public/`, swap, check `/VERSION`, roll back on failure |
+| Deploys | The release tag (never a branch) |
+| Auto-deploy couplings | None: publishing the Release does not deploy |
+| Health URL | `https://www.apes.org.uk/VERSION` |
+| Version field | The whole response body (for example `4.1.1`) |
 
-## Site specifics
+## Decisions and gotchas
 
-- `public/index.php` renders every route from `public/includes/site-data.php` through `render-page.php`; `apes_version()` reads `VERSION` for the footer.
-- Route, redirect and footer checks against the Laragon site: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts\validate-public-site.ps1`.
-- `scripts\export-static-site.ps1` writes optional static snapshots to `dist/static-export` (never deployed). The deploy path is `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`.
+- 2026-11-14: Laravel Herd Pro is the local development stack (Bambie, [#34](https://github.com/APESCIC/APES.CIC.Website/issues/34)). `public/.htaccess` stays the single source of the rules, applied locally by `LocalValetDriver.php`.
+- Herd hands static files to nginx directly, so the `X-Content-Type-Options` and `Referrer-Policy` headers only appear on PHP responses locally. Cloudron's Apache sends them on every response.
+- Checked-in static snapshots (`public/index.html`, `public/<route>/index.html`) are served ahead of the PHP pages, by Apache's `DirectoryIndex index.html index.php` and the same way by Herd ([#32](https://github.com/APESCIC/APES.CIC.Website/issues/32)). Until they go, `validate-public-site.ps1` stops at its snapshot checks.
+- `scripts/milestone-version next` still prints per-issue "Issue branch" and "PR title" lines; ignore them, as all work goes on the milestone branch.
+
+## Where to find things
+
+- Herd profile and local driver notes: [docs/herd/profile.md](docs/herd/profile.md).
+- Cloudron deployment: [docs/cloudron-lamp-deployment.md](docs/cloudron-lamp-deployment.md) and `deploy/cloudron/`.
+- Release history: [CHANGELOG.md](CHANGELOG.md), [public/CHANGELOG.md](public/CHANGELOG.md) and the Change Log Hub (`/change-log-hub/`).
+- Contributor summary: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 # Website standards
 
@@ -354,7 +385,7 @@ Required Cloudron LAMP checks before completion:
 10. UK GDPR, consent, retention, security, and audit implications are noted for forms or stored personal data.
 11. README, changelog, Change Log Hub, version records, generated output, and issue updates reflect the hosting impact.
 12. Local preview remains aligned with Cloudron LAMP assumptions.
-13. The changed pages have been checked in the Laragon preview (`http://apes-cic-website.test`, or Browsersync on `http://localhost:3104`).
+13. The changed pages have been checked in the Laravel Herd preview (`http://apes-cic-website.test`, or Browsersync on `http://localhost:3104`).
 14. Direct `file:///` access has been checked for browser served static pages and public assets where applicable, or a justified server required blocker has been recorded.
 
 ## Security, safety, and UK GDPR rules

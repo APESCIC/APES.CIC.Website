@@ -1,3 +1,35 @@
+## [4.1.3] - 2026-11-16
+
+<span class="pill pill-version">Version v4.1.3</span>
+<span class="pill pill-status">Dev</span>
+<span class="pill pill-type">Fixed</span>
+
+### Summary
+
+Maintenance release. Fixes `scripts/herd-setup.ps1` so PHP 8.4 isolation sticks after linking the site in Laravel Herd.
+
+### Detailed changes
+
+- `herd isolate` now passes `--site=<project>` from `docs/herd/profile.json` and stops the script if isolate fails (issue #38).
+
+### Affected areas
+
+- Website: www.apes.org.uk
+- Page or route: footer version only
+- Public impact: none beyond the version label
+- Internal impact: issue #38
+
+### Version decision
+
+- Previous version: v4.1.2
+- New version: v4.1.3
+- Version type: patch
+
+### Validation
+
+- Checks run: `scripts/herd-setup.ps1`, `herd site:info --json` (PHP 8.4 isolated), home and rewrite checks on `http://apes-cic-website.test/`
+- Rollback notes: deploy the previous tag, or swap back to `/app/data/public.previous`.
+
 ## [4.1.2] - 2026-11-14
 
 <span class="pill pill-version">Version v4.1.2</span>

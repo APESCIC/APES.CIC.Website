@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Version shipping
 
-This is the one rule for how work ships in this repository. `AGENTS.md`, `CONTRIBUTING.md`, the `complete-next-version` and `release-version` skills and the `/complete-next-version` command point here.
+This is the one rule for how work ships in this repository. Workflow slot values live in `AGENTS.md`; this rule is the procedure. `CONTRIBUTING.md`, the `complete-next-version` and `release-version` skills and the `/complete-next-version` command point here.
 
 ## The version
 

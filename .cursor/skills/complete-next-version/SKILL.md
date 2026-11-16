@@ -14,7 +14,7 @@ Follows `.cursor/rules/version-shipping.mdc`. Run it from one plan; when a new c
 3. **Branch.** Use the printed milestone branch. Create it from `origin/main` if it is missing (`git switch -c <branch> origin/main`, `git push -u origin HEAD`), otherwise switch to it and merge `origin/main`. Merge `origin/dependencies` with a merge commit. Stop on any conflict. Call `SetActiveBranch`.
 4. **Issues.** List the milestone's issues (`gh issue list --milestone "<title>" --state open`). Post the Started comment on each (`Add-IssueUpdate.ps1`).
 5. **Draft PR.** After the first commit, open one draft PR into `main` titled with the printed "Milestone PR" title, with `Closes #<n>` for every issue.
-6. **Work every issue in order** on the milestone branch. Small Conventional Commits with `Refs #<n>`, push when useful, check every changed page in the preview (desktop and mobile), keep the SEO, sitemap, footer and error-page rules in `AGENTS.md`. Post the Committed comment when an issue is done; leave it open. Don't ask between issues; stop only for a failure or blocker the plan does not settle.
+6. **Work every issue in order** on the milestone branch. Small Conventional Commits with `Refs #<n>`, push when useful, check every changed page in the preview (desktop and mobile), and follow `.cursor/skills/website-change-standards/SKILL.md` for SEO, sitemap, footer, changelog and error-page checks. Post the Committed comment when an issue is done; leave it open. Don't ask between issues; stop only for a failure or blocker the plan does not settle.
 7. **Hand over** to the `release-version` skill once every issue is committed.
 
 ## Never

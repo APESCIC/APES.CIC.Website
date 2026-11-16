@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Laravel Herd local development
 
-Laravel Herd is the supported local set-up; the steps of the preview gate are Cursor's `live-preview-gate` and `herd-local-preview` skills. This file fills their slots for this repository. Herd's nginx serves `public/`, PHP 8.4 (isolated to this site, as on Cloudron) runs any `.php` file, the root `LocalValetDriver.php` applies `public/.htaccess`, and Browsersync reloads the page on save. There is no database. Never use `file:///` as the preview.
+Laravel Herd is the only supported local set-up (never Laragon). Slot values (preview URL, ports, site name) live in `AGENTS.md`; this rule is the preview-gate procedure. The steps of the preview gate are Cursor's `live-preview-gate` and `herd-local-preview` skills. Herd's nginx serves `public/`, PHP 8.4 (isolated to this site, as on Cloudron) runs any `.php` file, the root `LocalValetDriver.php` applies `public/.htaccess`, and Browsersync reloads the page on save. There is no database. Never use `file:///` as the preview.
 
 ## Live preview gate (before any change)
 

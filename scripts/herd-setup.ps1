@@ -64,7 +64,8 @@ try {
         if (-not ($site.availablePhpVersions | Where-Object { $_.version -eq $herdProfile.php -and $_.installed })) {
             Stop-Setup 3 "Herd has no PHP $($herdProfile.php). Ask Bambie before running: herd php:install $($herdProfile.php)"
         }
-        & herd isolate $herdProfile.php | Out-Null
+        & herd isolate $herdProfile.php --site=$($herdProfile.project)
+        if ($LASTEXITCODE) { Stop-Setup 1 "herd isolate $($herdProfile.php) --site=$($herdProfile.project) failed." }
         Write-Ok "Isolated to PHP $($herdProfile.php)"
     } else {
         Write-Ok "PHP $($herdProfile.php) (isolated)"

@@ -1,6 +1,6 @@
 ## Current release
 
-- Version: `v4.1.2` (Dev is carried by the milestone title)
+- Version: `v4.1.3` (Dev is carried by the milestone title)
 - Release date: `2026-11-14`
 - Release impact: maintenance release. Local development and testing run on Laravel Herd (PHP 8.4, as on Cloudron), with `LocalValetDriver.php` applying the `public/.htaccess` rules locally; the public site is unchanged apart from the version label.
 - Operational note: preview the site in Laravel Herd with `scripts/preview.ps1`, run `scripts/validate-public-site.ps1` before staging, use `scripts/export-static-site.php` only for optional non-canonical static exports, and deploy a release tag with `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`, which uploads only `public/`.

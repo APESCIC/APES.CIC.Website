@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-const APES_FALLBACK_VERSION = 'v4.1.2';
+const APES_FALLBACK_VERSION = 'v4.1.3';
 const APES_SITE_NAME = 'Association of Protecting Exotic Species CIC';
 const APES_CIC_NUMBER = '16253848';
 const APES_CONTACT_EMAIL = 'info@apes.org.uk';
@@ -2895,7 +2895,44 @@ HTML,
 </section>
 
 <section class="section-shell" id="release-list">
-  <details class="release-card" data-release-card data-tags="current changed internal-only" open id="release-v412">
+  <details class="release-card" data-release-card data-tags="current fixed internal-only" open id="release-v413">
+    <summary>
+      <span class="release-version">v4.1.3</span>
+      <span class="release-date">2026-11-16</span>
+    </summary>
+    <div class="release-body">
+      <div class="pill-row">
+        <span class="pill pill-version">Version v4.1.3</span>
+        <span class="pill pill-status">Dev</span>
+        <span class="pill pill-type">Fixed</span>
+      </div>
+      <h3>Summary</h3>
+      <p>Maintenance release. Fixes local Herd set-up so PHP 8.4 isolation sticks after linking the site.</p>
+      <h3>Detailed changes</h3>
+      <ul class="clean-list">
+        <li><code>scripts/herd-setup.ps1</code> passes <code>--site</code> to <code>herd isolate</code> and stops if isolate fails (issue #38).</li>
+      </ul>
+      <h3>Affected areas</h3>
+      <ul class="clean-list">
+        <li>Website: www.apes.org.uk</li>
+        <li>Page or route: footer version only</li>
+        <li>Public impact: none beyond the version label</li>
+        <li>Internal impact: Laravel Herd set-up script (issue #38)</li>
+      </ul>
+      <h3>Version decision</h3>
+      <ul class="clean-list">
+        <li>Previous version: v4.1.2</li>
+        <li>New version: v4.1.3</li>
+        <li>Version type: patch</li>
+      </ul>
+      <h3>Validation</h3>
+      <ul class="clean-list">
+        <li>Checks run: Herd set-up script, site info PHP 8.4, home and rewrite checks on the local .test site</li>
+        <li>Rollback notes: deploy the previous tag, or swap back to <code>/app/data/public.previous</code></li>
+      </ul>
+    </div>
+  </details>
+  <details class="release-card" data-release-card data-tags="changed internal-only" id="release-v412">
     <summary>
       <span class="release-version">v4.1.2</span>
       <span class="release-date">2026-11-14</span>

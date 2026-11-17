@@ -1,0 +1,107 @@
+# Template: deploy a static/public website (public/ web root) to a Cloudron LAMP app.
+# Adapt: workflow name, environment name, default domain, health path (/VERSION).
+#
+# GitHub environment secrets: CLOUDRON_FQDN, CLOUDRON_TOKEN
+# GitHub environment vars: CLOUDRON_APP_ID, APP_URL (https://www.example.org), HEALTH_PATH (/VERSION)
+name: Deploy APES CIC Website to Cloudron
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Published release tag to deploy (vX.Y.Z)'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cloudron-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Upload public folder and verify VERSION
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.APP_URL }}
+    env:
+      CLOUDRON_FQDN: ${{ secrets.CLOUDRON_FQDN }}
+      CLOUDRON_TOKEN: ${{ secrets.CLOUDRON_TOKEN }}
+      CLOUDRON_APP_ID: ${{ vars.CLOUDRON_APP_ID }}
+      APP_URL: ${{ vars.APP_URL }}
+      HEALTH_PATH: ${{ vars.HEALTH_PATH || '/VERSION' }}
+      TAG: ${{ inputs.tag }}
+    steps:
+      - name: Check tag and environment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "::error::tag must be vX.Y.Z"; exit 1; }
+          for name in CLOUDRON_FQDN CLOUDRON_TOKEN CLOUDRON_APP_ID APP_URL; do
+            [[ -n "${!name:-}" ]] || { echo "::error::Missing $name"; exit 1; }
+          done
+
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Confirm tag is on main and VERSION matches
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=50
+          git merge-base --is-ancestor HEAD origin/main || { echo "::error::$TAG is not an ancestor of origin/main"; exit 1; }
+          expected="${TAG#v}"
+          actual="$(tr -d ' \r\n' < public/VERSION)"
+          [[ "$actual" == "$expected" ]] || { echo "::error::public/VERSION is '$actual', expected '$expected'"; exit 1; }
+
+      - name: Pack public folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar -czf public-release.tar.gz -C public .
+
+      - name: Install Cloudron CLI
+        run: npm install --global cloudron@9.0.4
+
+      - name: Create Cloudron backup
+        run: cloudron --server "$CLOUDRON_FQDN" --token "$CLOUDRON_TOKEN" backup create --app "$CLOUDRON_APP_ID"
+
+      - name: Upload and swap public folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          cloudron --server "$CLOUDRON_FQDN" --token "$CLOUDRON_TOKEN" push --app "$CLOUDRON_APP_ID" \
+            public-release.tar.gz /tmp/public-release.tar.gz
+          cloudron --server "$CLOUDRON_FQDN" --token "$CLOUDRON_TOKEN" exec --app "$CLOUDRON_APP_ID" -- bash -lc '
+            set -euo pipefail
+            cd /app/data
+            rm -rf public.next
+            mkdir public.next
+            tar -xzf /tmp/public-release.tar.gz -C public.next
+            rm -f /tmp/public-release.tar.gz
+            if [ -d public ]; then mv public public.previous; fi
+            mv public.next public
+            rm -rf public.previous
+          '
+
+      - name: Verify live VERSION matches the tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="${TAG#v}"
+          for attempt in $(seq 1 12); do
+            body="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' "$APP_URL$HEALTH_PATH?t=$RANDOM" | tr -d ' \r\n' || true)"
+            if [[ "$body" == "$expected" ]]; then
+              echo "Live VERSION is $expected"
+              exit 0
+            fi
+            echo "Attempt $attempt: got '${body:-empty}'"
+            sleep 5
+          done
+          echo "::error::$APP_URL$HEALTH_PATH did not serve $expected"
+          exit 1

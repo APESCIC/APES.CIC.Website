@@ -80,7 +80,7 @@ Shipping follows Cursor's `github-milestone-completion` and `ship-gate` skills. 
 | Cloudron app ID | `cfeb1a50-eb8d-4cfd-ac84-a0606c6051ec` |
 | Domain | `https://www.apes.org.uk` |
 | Web root | `/app/data/public` (PHP 8.4, set by `/app/data/PHP_VERSION`) |
-| Deploy command | `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`: backup, upload the tag's `public/`, swap, check `/VERSION`, roll back on failure |
+| Deploy command | `gh workflow run deploy-cloudron.yml -f tag=vX.Y.Z` (break-glass: `deploy/cloudron/deploy.ps1 -Tag vX.Y.Z`) |
 | Deploys | The release tag (never a branch) |
 | Auto-deploy couplings | None: publishing the Release does not deploy |
 | Health URL | `https://www.apes.org.uk/VERSION` |
